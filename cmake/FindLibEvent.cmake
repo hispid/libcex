@@ -6,7 +6,6 @@
 # LIBEVENT_LIBRARIES - The libraries needed to use LibEvent
 
 find_path     (LIBEVENT_INCLUDE_DIR NAMES event.h)
-find_library  (LIBEVENT_LIBRARY     NAMES event)
 find_library  (LIBEVENT_CORE        NAMES event_core)
 find_library  (LIBEVENT_EXTRA       NAMES event_extra)
 find_library  (LIBEVENT_THREAD      NAMES event_pthreads)
@@ -20,7 +19,6 @@ include (FindPackageHandleStandardArgs)
 
 set (LIBEVENT_INCLUDE_DIRS ${LIBEVENT_INCLUDE_DIR})
 set (LIBEVENT_LIBRARIES
-        ${LIBEVENT_LIBRARY}
         ${LIBEVENT_SSL}
         ${LIBEVENT_CORE}
         ${LIBEVENT_EXTRA}
