@@ -24,8 +24,8 @@ namespace cex
 // ctor/dtor
 //***************************************************************************
 
-Middleware::Middleware(const char* aPath, MiddlewareFunction func, int aMethod, int aFlags)
-   : func(std::move(func)), rep(aPath ? aPath : ".*", std::regex::optimize),
+Middleware::Middleware(const char* aPath, const MiddlewareFunction& func, int aMethod, int aFlags)
+   : func(func), rep(aPath ? aPath : ".*", std::regex::optimize),
      method(aMethod), path(aPath ? aPath : ""), flags(aFlags)
 {
    if (!aPath)
@@ -34,8 +34,8 @@ Middleware::Middleware(const char* aPath, MiddlewareFunction func, int aMethod, 
    type= tpStandard;
 }
 
-Middleware::Middleware(const char* aPath, UploadFunction func, int aMethod, int aFlags)
-   : uploadFunc(std::move(func)), rep(aPath ? aPath : ".*", std::regex::optimize),
+Middleware::Middleware(const char* aPath, const UploadFunction& func, int aMethod, int aFlags)
+   : uploadFunc(func), rep(aPath ? aPath : ".*", std::regex::optimize),
      method(aMethod), path(aPath ? aPath : ""), flags(aFlags)
 {
    if (!aPath)

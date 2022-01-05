@@ -106,7 +106,7 @@ typedef std::shared_ptr<Response> ResPtr;
    \param req The Request object representing the matched request 
    \param res The corresponding Response object which allows to create/send a response to the client 
    \param next A function to call when the next middleware shall be evaluated. */
-typedef std::function<void(Request* req, Response* res, std::function<void()> next)> MiddlewareFunction;
+typedef std::function<void(Request* req, Response* res, const std::function<void()>& next)> MiddlewareFunction;
 
 /*! \public
    \brief A function which is called by an upload Middleware when an incoming request matches.
@@ -178,7 +178,7 @@ class Request
 
    public:
 
-      /*! \brief Constructs a new Response object 
+      /*! \brief Constructs a new Response object
         \param req The underlying `libevhtp` request object 
        */
       explicit Request(evhtp_request* req);
@@ -200,9 +200,9 @@ class Request
       /*! \brief Iterates all HTTP headers of the request with the given callback function
         \param cb A PairCallbackFunction which is called for each header.
         If the callback function returns `true`, iteration is stopped.*/
-      void eachHeader(PairCallbackFunction cb); 
+      void eachHeader(PairCallbackFunction cb);
 
-      /*! \brief Returns the value of a HTTP header 
+      /*! \brief Returns the value of a HTTP header
         \param name Name of the HTTP header to retrieve */
       const char* get(const char* name);
 
@@ -212,7 +212,7 @@ class Request
         \param cb A PairCallbackFunction which is called for each parameter.
         If the callback function returns `true`, iteration is stopped.*/
       void eachQueryParam(PairCallbackFunction cb);
-      
+
       /*! \brief Returns the value of a URL query parameter
         \param name Name of the parameter to retrieve */
       const char* getQueryParam(const char* name);
@@ -221,7 +221,7 @@ class Request
 
       const char* getBody();     /*!< Returns the RAW body contents of the request  (unparsed, can be binary data)*/
       size_t getBodyLength();    /*!< Returns the length of RAW body contents (number of bytes) */
- 
+
       // CEX properties (sessionId, sslClientCert, ...)
 
       /*! \brief A list of properties of the current request
@@ -284,7 +284,7 @@ class Response
          stDone  /*!< Response was completed, that means a response was sent to the client. */
       };
 
-      /*! \brief Flags describing features of the response. Currently this affects only compression. 
+      /*! \brief Flags describing features of the response. Currently this affects only compression.
        
         For compression to work, the library must be compiled with zlib support.
        */
@@ -297,7 +297,7 @@ class Response
          fCompressDeflate= 0x0002   /*!< Enable deflate compression of the response contents */
       };
 
-      /*! \brief Constructs a new `Response` object 
+      /*! \brief Constructs a new `Response` object
         \param req The underlying `libevhtp` request object 
        */
       explicit Response(evhtp_request* req);
@@ -307,29 +307,29 @@ class Response
         \param Value The value which shall be set
         */
       void set(const char* name, const char* value);
-      
+
       /*! \brief Sets a HTTP header to a given value
         \param name Name of the HTTP header
         \param Value The value which shall be set
         */
       void set(const char* name, int value);
 
-      /*! \brief Sends a response to the client with the supplied HTTP code and payload text 
+      /*! \brief Sends a response to the client with the supplied HTTP code and payload text
        \param string The text which shall be sent to the client in the response body.
        \param status The HTTP code which shall be sent to the client.
-       */ 
+       */
       int end(const char* string, int status);
 
       /*! \brief Sends a response to the client with the supplied HTTP code and payload buffer
        \param buffer The data buffer which holds the data which shall be sent to the client in the response body.
        \param bufLen The number of bytes which of the buffer which shall be sent.
        \param status The HTTP code which shall be sent to the client.
-       */ 
+       */
       int end(const char* buffer, size_t bufLen, int status);
-      
+
       /*! \brief Sends a response to the client with the supplied HTTP code and no body/payload
        \param status The HTTP code which shall be sent to the client.
-       */ 
+       */
       int end(int status);
 
       /*! \brief Streams a response to the client with the supplied HTTP code
@@ -338,7 +338,7 @@ class Response
        \return `cex::success` (0) if the whole contents were successfully transferred or `cex::fail` (-1) if the stream could not be read.
       
        This function is useful for transferring larger payloads (e.g. files) which shall not be fully loaded into memory.
-       */ 
+       */
       int stream(int status, std::istream* stream);
 
       /*! \brief Queries the state of the response.
@@ -357,7 +357,7 @@ class Response
        */
       bool isPending() { return !isState(stDone); }
 
-      /*! \brief Sets the response object flags 
+      /*! \brief Sets the response object flags
         \param newFlags The flags which shall replace the currently set flags */
       void setFlags(int newFlags) { flags= newFlags; }
 
@@ -373,7 +373,7 @@ class Response
 //***************************************************************************
 // class Middleware
 //***************************************************************************
-/*! \class Middleware 
+/*! \class Middleware
   \brief Represents a single middleware.
 
   Contains the middleware function and its configuration (path, method, matching flags).
@@ -400,13 +400,13 @@ class Middleware
          tpUpload    /*!< Middleware to handle (file-)uploads */
       };
 
-      /*! \brief Constructs a new middleware with the given parameters 
+      /*! \brief Constructs a new middleware with the given parameters
         \param path The path the URL shall be attached to. If path is NULL, all URLs will match 
         \param func The MiddlewareFunction which is called when the request matches 
         \param method The HTTP method the request must match 
         \param flags Matching flags which control the path matching behaviour */
-      Middleware(const char* path, MiddlewareFunction func, int method= na, int flags= fMatchContain);
-      Middleware(const char* path, UploadFunction func, int method= na, int flags= fMatchContain);
+      Middleware(const char* path, const MiddlewareFunction& func, int method= na, int flags= fMatchContain);
+      Middleware(const char* path, const UploadFunction& func, int method= na, int flags= fMatchContain);
 
       bool match(Request* req);
       const char* getPath() { return path.c_str(); }
@@ -419,7 +419,7 @@ class Middleware
       std::regex rep;
       std::string path;
       MiddlewareFunction func;
-      UploadFunction uploadFunc; 
+      UploadFunction uploadFunc;
 };
 
 //***************************************************************************
@@ -465,7 +465,7 @@ class Server
          bool compress;         /*!< \brief Globally enable compression of outgoing responses (default: true).
 
                                   This will enable gzip/deflate compression of responses if Accept-Encoding allows compressioni (default: false).\n Compression can be enabled/disabled manually for a single request using the request flags. For example: `res.get()->setFlags(res.get()->getFlags() | Response::fCompressGZip)`. \n \n Library **must** be built with `libz` to make this work. */
-         bool parseSslInfo;     /*!< \brief Flag indicating whether or not SSL client info shall be parsed for each request (default: true). 
+         bool parseSslInfo;     /*!< \brief Flag indicating whether or not SSL client info shall be parsed for each request (default: true).
                                   
                                   This tries to extract the SSL certificate provided by the client and store it into a CertificateInfo structure within the requests `sslClientCert` property. */
          bool sslEnabled;       /*!< \brief Flag indicating whether or not SSL is enabled on the listener (default: false). */
@@ -488,12 +488,12 @@ class Server
 
       // server
 
-      /*! \brief Starts the server with listener on address and port specified in the server Config struct 
+      /*! \brief Starts the server with listener on address and port specified in the server Config struct
         \param block If set to `true`, runs the listener/eventloop in the calling thread, thus blocking the caller.
         If set to `false`, spawns a new thread which runs the listener/eventloop, and returns immediately.*/
       int listen(bool block= true);
 
-      /*! \brief Starts the server with listener on the given address and port 
+      /*! \brief Starts the server with listener on the given address and port
         \param address The address to start the listener on (e.g. `localhost` or `10.0.2.14`)
         \param port The port to start the listener on
         \param block If set to `true`, runs the listener/eventloop in the calling thread, thus blocking the caller.
@@ -508,11 +508,11 @@ class Server
       /*! \brief Removes all attached middlewares */
       void reset() { middleWares.clear(); }
 
-      /*! \brief Attaches a middleware function with no conditions 
+      /*! \brief Attaches a middleware function with no conditions
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void use(MiddlewareFunction func);
+      void use(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function with no HTTP method specification and with the given path
 
@@ -520,13 +520,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void use(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void use(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for HTTP GET requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void get(MiddlewareFunction func);
+      void get(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the HTTP GET method and the given path
 
@@ -534,13 +534,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void get(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void get(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for HTTP PUT requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void put(MiddlewareFunction func);
+      void put(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the HTTP PUT method and the given path
 
@@ -548,13 +548,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void put(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void put(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for HTTP POST requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void post(MiddlewareFunction func);
+      void post(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the HTTP POST method and the given path
 
@@ -562,13 +562,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void post(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void post(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for HTTP HEAD requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void head(MiddlewareFunction func);
+      void head(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the HTTP HEAD method and the given path
 
@@ -576,13 +576,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void head(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void head(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for HTTP DEL requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void del(MiddlewareFunction func);
+      void del(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the HTTP DEL method and the given path
 
@@ -590,13 +590,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void del(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void del(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for HTTP CONNECT requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void connect(MiddlewareFunction func);
+      void connect(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the HTTP CONNECT method and the given path
 
@@ -604,13 +604,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void connect(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void connect(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for HTTP OPTIONS requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void options(MiddlewareFunction func);
+      void options(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the HTTP OPTIONS method and the given path
 
@@ -618,14 +618,14 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void options(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void options(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
 
       /*! \brief Attaches a middleware function for HTTP TRACE requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void trace(MiddlewareFunction func);
+      void trace(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the HTTP TRACE method and the given path
 
@@ -633,13 +633,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void trace(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void trace(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for HTTP PATCH requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void patch(MiddlewareFunction func);
+      void patch(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the HTTP PATCH method and the given path
 
@@ -647,7 +647,7 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void patch(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void patch(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       // WEBDAV HTTP methods
 
@@ -655,7 +655,7 @@ class Server
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void mkcol(MiddlewareFunction func);
+      void mkcol(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the WEBDAV MKCOL method and the given path
 
@@ -663,13 +663,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void mkcol(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void mkcol(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for WEBDAV COPY requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void copy(MiddlewareFunction func);
+      void copy(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the WEBDAV COPY method and the given path
 
@@ -677,13 +677,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void copy(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void copy(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for WEBDAV MOVE requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void move(MiddlewareFunction func);
+      void move(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the WEBDAV MOVE method and the given path
 
@@ -691,13 +691,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void move(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void move(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for HTTP WEBDAV PROPFIND requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void propfind(MiddlewareFunction func);
+      void propfind(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the WEBDAV PROPFIND method and the given path
 
@@ -705,13 +705,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void propfind(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void propfind(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for WEBDAV PROPPATCH requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void proppatch(MiddlewareFunction func);
+      void proppatch(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the WEBDAV PROPPATCH method and the given path
 
@@ -719,13 +719,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void proppatch(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void proppatch(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for WEBDAV LOCK requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void lock(MiddlewareFunction func);
+      void lock(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the WEBDAV LOCK method and the given path
 
@@ -733,13 +733,13 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void lock(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void lock(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       /*! \brief Attaches a middleware function for WEBDAV UNLOCK requests
         
         The function will be called for every request.
         \param func The middleware function which shall be called */
-      void unlock(MiddlewareFunction func);
+      void unlock(const MiddlewareFunction& func);
 
       /*! \brief Attaches a middleware function for the WEBDAV UNLOCK method and the given path
 
@@ -747,7 +747,7 @@ class Server
         \param path The URL path which shall be compared against the request URL
         \param func The middleware function which shall be called
         \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void unlock(const char* path, MiddlewareFunction func, int flags= Middleware::fMatchContain);
+      void unlock(const char* path, const MiddlewareFunction& func, int flags= Middleware::fMatchContain);
 
       // upload hooks to catch file uploads w/ streaming
 
@@ -756,7 +756,7 @@ class Server
          The provided UploadFunction will be called repeatedly until the whole request body data is received. Processing will not
          continue to any subsequent middlewares until the upload is completed.
          \param func The UploadFunction which shall be called upon receiving request body data */
-      void uploads(UploadFunction func);
+      void uploads(const UploadFunction& func);
 
       /*! \brief Attaches an upload middleware function for the given HTTP method and URL path
 
@@ -765,7 +765,7 @@ class Server
          \param path The URL path which shall be compared against the request URL
          \param func The UploadFunction which shall be called upon receiving request body data
          \param flags Flags controlling the URL matching behaviour (see Middleware)*/
-      void uploads(const char* path, UploadFunction func, Method method= methodPOST, int flags= Middleware::fMatchContain);
+      void uploads(const char* path, const UploadFunction& func, Method method= methodPOST, int flags= Middleware::fMatchContain);
  
       // tools
 

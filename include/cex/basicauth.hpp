@@ -36,7 +36,7 @@ namespace cex
 // basicAuth
 //***************************************************************************
 
-/*! \public 
+/*! \public
   \brief Creates a middleware that extracts username and password information from the `Authorization` HTTP header
  */
 

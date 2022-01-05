@@ -52,7 +52,7 @@ Server::Server()
    startSignaled= started= false;
 }
 
-Server::~Server() 
+Server::~Server()
 {
 }
 
@@ -94,7 +94,7 @@ int Server::listen(bool block)
 
 int Server::listen(std::string aAddress, int aPort, bool block) 
 { 
-   serverConfig.address= aAddress;
+   serverConfig.address= std::move(aAddress);
    serverConfig.port= aPort;
 
    return listen(block);
@@ -148,7 +148,7 @@ int Server::start(bool block)
 #endif
 
       // attach static request callback function, init number of threads, bind socket
-      // DONT use evhtp_set_gencb, because we need the return-cb to attach the
+      // DON'T use evhtp_set_gencb, because we need the return-cb to attach the
       // evhtp_hook_on_headers callback function HERE.
 
       //evhtp_set_gencb(httpServer.get(), Server::handleRequest, this);
@@ -178,7 +178,7 @@ int Server::start(bool block)
 
       event_base_loop(eventBase.get(), 0);
 
-      // when done, properly unbind httpSever. will be free'd by unique_ptr
+      // when done, properly unbind httpSever. will be freed by unique_ptr
       // event_base will be free'd by stop()
 
       evhtp_unbind_socket(httpServer.get());
@@ -240,7 +240,7 @@ int Server::stop()
 // use (general middleware)
 //***************************************************************************
 
-void Server::use(MiddlewareFunction func)
+void Server::use(const MiddlewareFunction& func)
 {
    use(0, func);
 }
@@ -249,7 +249,7 @@ void Server::use(MiddlewareFunction func)
 // use (routing middleware)
 //***************************************************************************
 
-void Server::use(const char* path, MiddlewareFunction func, int flags)
+void Server::use(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, na, flags))));
 }
@@ -258,175 +258,175 @@ void Server::use(const char* path, MiddlewareFunction func, int flags)
 // use (method variants)
 //***************************************************************************
 
-void Server::get(MiddlewareFunction func)
+void Server::get(const MiddlewareFunction& func)
 {
    get(0, func);
 }
 
-void Server::get(const char* path, MiddlewareFunction func, int flags)
+void Server::get(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_GET, flags))));
 }
 
-void Server::put(MiddlewareFunction func)
+void Server::put(const MiddlewareFunction& func)
 {
    put(0, func);
 }
 
-void Server::put(const char* path, MiddlewareFunction func, int flags)
+void Server::put(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_PUT, flags))));
 }
 
-void Server::post(MiddlewareFunction func)
+void Server::post(const MiddlewareFunction& func)
 {
    post(0, func);
 }
 
-void Server::post(const char* path, MiddlewareFunction func, int flags)
+void Server::post(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_POST, flags))));
 }
 
-void Server::head(MiddlewareFunction func)
+void Server::head(const MiddlewareFunction& func)
 {
    head(0, func);
 }
 
-void Server::head(const char* path, MiddlewareFunction func, int flags)
+void Server::head(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_HEAD, flags))));
 }
 
-void Server::del(MiddlewareFunction func)
+void Server::del(const MiddlewareFunction& func)
 {
    del(0, func);
 }
 
-void Server::del(const char* path, MiddlewareFunction func, int flags)
+void Server::del(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_DELETE, flags))));
 }
 
-void Server::connect(MiddlewareFunction func)
+void Server::connect(const MiddlewareFunction& func)
 {
    connect(0, func);
 }
 
-void Server::connect(const char* path, MiddlewareFunction func, int flags)
+void Server::connect(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_CONNECT, flags))));
 }
 
-void Server::options(MiddlewareFunction func)
+void Server::options(const MiddlewareFunction& func)
 {
    options(0, func);
 }
 
-void Server::options(const char* path, MiddlewareFunction func, int flags)
+void Server::options(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_OPTIONS, flags))));
 }
 
-void Server::trace(MiddlewareFunction func)
+void Server::trace(const MiddlewareFunction& func)
 {
    trace(0, func);
 }
 
-void Server::trace(const char* path, MiddlewareFunction func, int flags)
+void Server::trace(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_TRACE, flags))));
 }
 
-void Server::patch(MiddlewareFunction func)
+void Server::patch(const MiddlewareFunction& func)
 {
    patch(0, func);
 }
 
-void Server::patch(const char* path, MiddlewareFunction func, int flags)
+void Server::patch(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_PATCH, flags))));
 }
 
 
-void Server::mkcol(MiddlewareFunction func)
+void Server::mkcol(const MiddlewareFunction& func)
 {
    mkcol(0, func);
 }
 
-void Server::mkcol(const char* path, MiddlewareFunction func, int flags)
+void Server::mkcol(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_MKCOL, flags))));
 }
 
-void Server::copy(MiddlewareFunction func)
+void Server::copy(const MiddlewareFunction& func)
 {
    copy(0, func);
 }
 
-void Server::copy(const char* path, MiddlewareFunction func, int flags)
+void Server::copy(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_COPY, flags))));
 }
 
-void Server::move(MiddlewareFunction func)
+void Server::move(const MiddlewareFunction& func)
 {
    move(0, func);
 }
 
-void Server::move(const char* path, MiddlewareFunction func, int flags)
+void Server::move(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_MOVE, flags))));
 }
 
-void Server::propfind(MiddlewareFunction func)
+void Server::propfind(const MiddlewareFunction& func)
 {
    propfind(0, func);
 }
 
-void Server::propfind(const char* path, MiddlewareFunction func, int flags)
+void Server::propfind(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_PROPFIND, flags))));
 }
 
-void Server::proppatch(MiddlewareFunction func)
+void Server::proppatch(const MiddlewareFunction& func)
 {
    proppatch(0, func);
 }
 
-void Server::proppatch(const char* path, MiddlewareFunction func, int flags)
+void Server::proppatch(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_PROPPATCH, flags))));
 }
 
-void Server::lock(MiddlewareFunction func)
+void Server::lock(const MiddlewareFunction& func)
 {
    lock(0, func);
 }
 
-void Server::lock(const char* path, MiddlewareFunction func, int flags)
+void Server::lock(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_LOCK, flags))));
 }
 
-void Server::unlock(MiddlewareFunction func)
+void Server::unlock(const MiddlewareFunction& func)
 {
    unlock(0, func);
 }
 
-void Server::unlock(const char* path, MiddlewareFunction func, int flags)
+void Server::unlock(const char* path, const MiddlewareFunction& func, int flags)
 {
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_UNLOCK, flags))));
 }
 
 // upload hooks to catch file uploads w/ streaming
 
-void Server::uploads(UploadFunction func)
+void Server::uploads(const UploadFunction& func)
 {
    uploads(0, func);
 }
 
-void Server::uploads(const char* path, UploadFunction func, Method method, int flags)
+void Server::uploads(const char* path, const UploadFunction& func, Method method, int flags)
 {
    int m= htp_method_POST;
 

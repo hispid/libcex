@@ -34,7 +34,7 @@ MiddlewareFunction filesystem(const std::string& aPath)
    return filesystem(opts);
 }
 
-MiddlewareFunction filesystem(std::shared_ptr<FilesystemOptions> opts)
+MiddlewareFunction filesystem(const std::shared_ptr<FilesystemOptions>& opts)
 {
    // opts is CAPTURED, thus held for the lifetime of the lambda. this is INTENDED, and NOT a leak,
    // so the shared_ptr is not an issue
@@ -42,7 +42,7 @@ MiddlewareFunction filesystem(std::shared_ptr<FilesystemOptions> opts)
    if (opts.get() && !opts.get()->rootPath.empty() && opts.get()->rootPath.back() != '/')
       opts.get()->rootPath.push_back('/');
 
-   MiddlewareFunction res = [opts](Request* req, Response* res, std::function<void()> next)
+   MiddlewareFunction res = [opts](Request* req, Response* res, const std::function<void()>& next)
    {
       FilesystemOptions* theOpts = opts.get() ? opts.get() : &defaultOptions;
 

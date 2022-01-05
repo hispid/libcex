@@ -100,7 +100,7 @@ struct SessionOptions
   cookie is attached to the Response object. The session ID is also added to the Request object's property list. The name of the 
   property corresponds to the cookie/session ID name.
  */
-MiddlewareFunction sessionHandler(std::shared_ptr<SessionOptions> opts = nullptr);
+MiddlewareFunction sessionHandler(const std::shared_ptr<SessionOptions>& opts = nullptr);
 
 
 //***************************************************************************

@@ -107,14 +107,14 @@ struct SecurityOptions
    SecurityOptions();
 
    int noDNSPrefetch;  /*!< \brief If `> -1`, sets the `X-DNS-Prefetch-Control` header to `on` (1) or `off` (0) (default: `1`) */
-   bool ieNoOpen;      /*!< \brief If `true`, sets the `X-Download-Options` header to `noopen` (default: `true`) */ 
+   bool ieNoOpen;      /*!< \brief If `true`, sets the `X-Download-Options` header to `noopen` (default: `true`) */
    bool disableCache;  /*!< \brief If `true`, sets several cache-related headers (default: `true`)
 
                         Sets the following headers:
                         \li `Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate`
                         \li `Pragma: no-cache`
                         \li `Expires: 0` */
-   bool noSniff;       /*!< \brief If `true`, sets the `X-Content-Type-Options` header to `nosniff` (default: `true`) */ 
+   bool noSniff;       /*!< \brief If `true`, sets the `X-Content-Type-Options` header to `nosniff` (default: `true`) */
    int referrer;       /*!< \brief If `<> refUnknown`, sets the Referrer-Policy header (default: `refUnknown`)
 
                         Sets the header according to the supplied enum value:
@@ -128,13 +128,13 @@ struct SecurityOptions
                         \li refStrictOriginWhenCrossOrigin sets `Referrer-Policy: strict-origin-when-cross-origin`
                         \li refUnsafeUrl sets `Referrer-Policy: unsafe-url`
                        */
- 
-   bool xssProtection; /*!< \brief If `true`, sets the `X-XSS-Protection` header to `1; mode=block` (default: `true`) */ 
+
+   bool xssProtection; /*!< \brief If `true`, sets the `X-XSS-Protection` header to `1; mode=block` (default: `true`) */
 
 
    // X-Frame-Options
 
-   XFrame xFrameAllow; /*!< \brief If <> `xfUnknown`, sets the `X-Frame-Options` header (default: `xfUnknown`) 
+   XFrame xFrameAllow; /*!< \brief If <> `xfUnknown`, sets the `X-Frame-Options` header (default: `xfUnknown`)
                         
                         Sets the header according to the supplied value:
 
@@ -153,7 +153,7 @@ struct SecurityOptions
 
    // HTTP Public Key Pinning
 
-   int hpkpMaxAge;                     /*!< \brief Sets the `max-age` option of the `Public-Key-Pins` header (default: `31536000`). 
+   int hpkpMaxAge;                     /*!< \brief Sets the `max-age` option of the `Public-Key-Pins` header (default: `31536000`).
                                          If `hpkpMaxAge` is not set, or `hpkpKeys` is empty, NO header is set*/
 
    std::vector<std::string> hpkpKeys;  /*!< \brief Should contain the list of keys to add to the HPKP header .
@@ -162,10 +162,10 @@ struct SecurityOptions
    std::string hpkpReportUri;          /*!< \brief If the HPKP header is set, adds the `report-uri` option, if the string is non-empty (default: empty) */
 };
 
-/*! \public 
+/*! \public
   \brief Creates a middleware that sets a number of HTTP headers related to security
  */
-MiddlewareFunction securityHeaders(std::shared_ptr<SecurityOptions> opts= nullptr);
+MiddlewareFunction securityHeaders(const std::shared_ptr<SecurityOptions>& opts= nullptr);
 
 //***************************************************************************
 } // namespace cex

@@ -20,6 +20,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <utility>
 
 namespace cex
 {
@@ -38,24 +39,24 @@ class Property
    public:
 
       /*! \brief Constructs a new property with a string value */
-      explicit Property(const std::string& value) : stringValue(value), longValue(0), doubleValue(0), ptrValue(0) {}
+      explicit Property(const std::string& value) : stringValue(value), longValue(0), doubleValue(0), ptrValue(nullptr) {}
       /*! \brief Constructs a new property with a string value (moving the value) */
-      explicit Property(std::string&& value)      : stringValue(value), longValue(0), doubleValue(0), ptrValue(0) {}
+      explicit Property(std::string&& value)      : stringValue(std::move(value)), longValue(0), doubleValue(0), ptrValue(nullptr) {}
       /*! \brief Constructs a new property with a long value */
-      explicit Property(long value)               : longValue(value), doubleValue(0), ptrValue(0) {}
+      explicit Property(long value)               : longValue(value), doubleValue(0), ptrValue(nullptr) {}
       /*! \brief Constructs a new property with a double value */
-      explicit Property(double value)             : longValue(0), doubleValue(value), ptrValue(0) {}
+      explicit Property(double value)             : longValue(0), doubleValue(value), ptrValue(nullptr) {}
       /*! \brief Constructs a new property with a void* value */
       explicit Property(void* value)              : longValue(0), doubleValue(0), ptrValue(value) {}
 
       /*! \brief Retrieves the string value of the property. If no string value was set, returns an empty string object */
       const std::string& getStringValue() const { return stringValue; }
       /*! \brief Retrieves the long value of the property. If no long value was set, returns 0 */
-      long getLongValue() const            { return longValue; }
+      long getLongValue() const                 { return longValue; }
       /*! \brief Retrieves the double value of the property. If no double value was set, returns 0 */
-      double getDoubleValue() const        { return doubleValue; }
+      double getDoubleValue() const             { return doubleValue; }
       /*! \brief Retrieves the void* value casted to the template type. If no void* was set, returns a null-pointer */
-      template<typename T> T* getObjectValue() { return  (T*)ptrValue; }
+      template<typename T> T* getObjectValue()  { return  (T*)ptrValue; }
 
    private:
 
@@ -78,7 +79,7 @@ class PropertyList
    public:
 
       /*! \brief Retrieves the Property object of a given key */
-      Property* getProperty(std::string key)
+      Property* getProperty(const std::string& key)
       {
          std::shared_ptr<Property> res= entries[key];
          return res ? res.get() : nullptr;
@@ -86,43 +87,43 @@ class PropertyList
 
       /*! \brief Retrieves the value of a given key as a class-pointer value (of type `T`) */
       template<typename T> 
-      T* getObject(std::string key)
+      T* getObject(const std::string& key)
       { 
          std::shared_ptr<Property> res= entries[key];
          return res ? res.get()->getObjectValue<T>() : nullptr;
       }
 
       /*! \brief Retrieves the long value of a given key */
-      long getLong(std::string key)
+      long getLong(const std::string& key)
       {
          std::shared_ptr<Property> res= entries[key];
          return res ? res.get()->getLongValue() : 0;
       }
 
       /*! \brief Retrieves the double value of a given key */
-      double getDouble(std::string key)
+      double getDouble(const std::string& key)
       {
          std::shared_ptr<Property> res= entries[key];
          return res ? res.get()->getDoubleValue() : 0;
       }
 
       /*! \brief Retrieves the string value of a given key */
-      std::string getString(std::string key)
+      std::string getString(const std::string& key)
       {
          std::shared_ptr<Property> res= entries[key];
          return res ? res.get()->getStringValue() : std::string();
       }
 
       /*! \brief Sets the value of a key to a string value. Replaces previous values of a key */
-      void set(std::string key, std::string value)   { entries[key]= std::make_shared<Property>(value); }
+      void set(const std::string& key, const std::string& value)   { entries[key]= std::make_shared<Property>(value); }
       /*! \brief Sets the value of a key to a string value (moving the content). Replaces previous values of a key */
-      void set(std::string key, std::string&& value) { entries[key]= std::make_shared<Property>(value); }
+      void set(const std::string& key, std::string&& value) { entries[key]= std::make_shared<Property>(value); }
       /*! \brief Sets the value of a key to a long value. Replaces previous values of a key */
-      void set(std::string key, long value)          { entries[key]= std::make_shared<Property>(value); }
+      void set(const std::string& key, long value)          { entries[key]= std::make_shared<Property>(value); }
       /*! \brief Sets the value of a key to a double value. Replaces previous values of a key */
-      void set(std::string key, double value)        { entries[key]= std::make_shared<Property>(value); }
+      void set(const std::string& key, double value)        { entries[key]= std::make_shared<Property>(value); }
       /*! \brief Sets the value of a key to a void* value. Replaces previous values of a key */
-      void set(std::string key, void* value)         { entries[key]= std::make_shared<Property>(value); }
+      void set(const std::string& key, void* value)         { entries[key]= std::make_shared<Property>(value); }
 
       /*! \brief Checks if the list contains a given key */
       bool has(std::string key)    { return entries.count(key) > 0; }

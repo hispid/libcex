@@ -24,12 +24,12 @@ namespace cex
 
 static struct SessionOptions defaultSessionOptions;
 
-MiddlewareFunction sessionHandler(std::shared_ptr<SessionOptions> opts)
+MiddlewareFunction sessionHandler(const std::shared_ptr<SessionOptions>& opts)
 {
    // opts is CAPTURED, thus held for the lifetime of the lambda. this is INTENDED, and NOT a leak,
    // so the shared_ptr is not an issue
 
-   MiddlewareFunction res = [opts](Request* req, Response* res, std::function<void()> next)
+   MiddlewareFunction res = [opts](Request* req, Response* res, const std::function<void()>& next)
    {
       SessionOptions* theOpts = opts.get() ? opts.get() : &defaultSessionOptions;
       std::string sessionIDName= theOpts->name;

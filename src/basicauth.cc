@@ -33,7 +33,7 @@ static const int B64index[256] =
 
 MiddlewareFunction basicAuth()
 {
-   MiddlewareFunction res = [](Request* req, Response* res, std::function<void()> next)
+   MiddlewareFunction res = [](Request* req, Response* res, const std::function<void()>& next)
    {
       const char* authenticationHeader= req->get("Authorization");
 

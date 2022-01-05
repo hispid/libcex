@@ -38,12 +38,12 @@ SecurityOptions::SecurityOptions()
    hpkpIncludeSubDomains= true;
 }
 
-MiddlewareFunction securityHeaders(std::shared_ptr<SecurityOptions> opts)
+MiddlewareFunction securityHeaders(const std::shared_ptr<SecurityOptions>& opts)
 {
    // opts is CAPTURED, thus held for the lifetime of the lambda. this is INTENDED, and NOT a leak,
    // so the shared_ptr is not an issue
 
-   MiddlewareFunction res = [opts](Request* req, Response* res, std::function<void()> next)
+   MiddlewareFunction res = [opts](Request* req, Response* res, const std::function<void()>& next)
    {
       SecurityOptions* theOpts = opts.get() ? opts.get() : &defaultOptions;
 

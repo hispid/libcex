@@ -53,7 +53,7 @@ namespace cex
 /*! \struct FilesystemOptions
   \brief Contains all options for the filesystem middleware
   */
- 
+
 struct FilesystemOptions
 {
    /*! \brief Constructs a new options object with defaultEncoding `utf-8` and empty rootPath*/
@@ -65,21 +65,21 @@ struct FilesystemOptions
    std::string defaultEncoding;  /*!< \brief The default encoding set in the `Content-Type` header */
 };
 
-/*! \public 
+/*! \public
   \brief Creates a middleware that loads files from the filesystem with the given path as rootPath
   \param path The path to use as rootPath
 
   The path of request URLs will be appended as relative paths when accessing files .
  */
-MiddlewareFunction filesystem(std::string aPath);
+MiddlewareFunction filesystem(const std::string& aPath);
 
-/*! \public 
+/*! \public
   \brief Creates a middleware that loads files from the filesystem with the given options object
   \param opts The FilesystemOptions object containing rootPath and defaultEncoding
 
   The path of request URLs will be appended as relative paths when accessing files .
  */
-MiddlewareFunction filesystem(std::shared_ptr<FilesystemOptions> opts= nullptr);
+MiddlewareFunction filesystem(const std::shared_ptr<FilesystemOptions>& opts= nullptr);
 
 //***************************************************************************
 } // namespace cex
