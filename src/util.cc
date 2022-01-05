@@ -66,17 +66,14 @@ std::string randomStringHex(int len)
    if (len <= 0 || len >= 1024*1024)
       return res;
 
-   unsigned char* buffer = (unsigned char*)calloc(len, sizeof(char));
    char buf[10];
 
 #ifdef CEX_WITH_SSL
-   int rc = RAND_bytes(buffer, len);
+   std::vector<unsigned char> buffer(len);
+   int rc = RAND_bytes(buffer.data(), len);
 
    if (rc != 1)
-   {
-      ::free(buffer);
       return res;
-   }
 
    for (int i= 0; i < len; i++)
    {
@@ -95,8 +92,6 @@ std::string randomStringHex(int len)
    }
 
 #endif
-
-   ::free(buffer);
 
    return res;
 }
