@@ -29,7 +29,7 @@
 #include "plist.hpp"
 #include "cex_config.hpp"
 
-#define IO_BUFFER_SIZE 128*1024
+#define IO_BUFFER_SIZE (128*1024)
 
 namespace cex
 {
