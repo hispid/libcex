@@ -365,9 +365,6 @@ class Response
       int getFlags() const { return flags; };
 
    private:
-
-      static evhtp_res sendChunk(evhtp_connection_t* conn, void* arg);
-
       evhtp_request* req;
       State state;
       int flags;
