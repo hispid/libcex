@@ -10,8 +10,6 @@
 // includes
 //***************************************************************************
 
-#include <iostream>
-
 #include <cex/core.hpp>
 #include <cex/ssl.hpp>
 #include <cex/util.hpp>

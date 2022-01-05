@@ -10,12 +10,9 @@
 // includes
 //***************************************************************************
 
-#include <iostream>
-
 #include <cex/core.hpp>
 #include <cex/ssl.hpp>
 #include <cex/util.hpp>
-#include <memory>
 #include <utility>
 
 namespace cex
@@ -253,7 +250,7 @@ void Server::use(const MiddlewareFunction& func)
 
 void Server::use(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, na, flags))));
+   middleWares.emplace_back(new Middleware(path, func, na, flags));
 }
 
 //***************************************************************************
@@ -267,7 +264,7 @@ void Server::get(const MiddlewareFunction& func)
 
 void Server::get(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_GET, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_GET, flags));
 }
 
 void Server::put(const MiddlewareFunction& func)
@@ -277,7 +274,7 @@ void Server::put(const MiddlewareFunction& func)
 
 void Server::put(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_PUT, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_PUT, flags));
 }
 
 void Server::post(const MiddlewareFunction& func)
@@ -287,7 +284,7 @@ void Server::post(const MiddlewareFunction& func)
 
 void Server::post(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_POST, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_POST, flags));
 }
 
 void Server::head(const MiddlewareFunction& func)
@@ -297,7 +294,7 @@ void Server::head(const MiddlewareFunction& func)
 
 void Server::head(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_HEAD, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_HEAD, flags));
 }
 
 void Server::del(const MiddlewareFunction& func)
@@ -307,7 +304,7 @@ void Server::del(const MiddlewareFunction& func)
 
 void Server::del(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_DELETE, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_DELETE, flags));
 }
 
 void Server::connect(const MiddlewareFunction& func)
@@ -317,7 +314,7 @@ void Server::connect(const MiddlewareFunction& func)
 
 void Server::connect(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_CONNECT, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_CONNECT, flags));
 }
 
 void Server::options(const MiddlewareFunction& func)
@@ -327,7 +324,7 @@ void Server::options(const MiddlewareFunction& func)
 
 void Server::options(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_OPTIONS, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_OPTIONS, flags));
 }
 
 void Server::trace(const MiddlewareFunction& func)
@@ -337,7 +334,7 @@ void Server::trace(const MiddlewareFunction& func)
 
 void Server::trace(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_TRACE, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_TRACE, flags));
 }
 
 void Server::patch(const MiddlewareFunction& func)
@@ -347,7 +344,7 @@ void Server::patch(const MiddlewareFunction& func)
 
 void Server::patch(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_PATCH, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_PATCH, flags));
 }
 
 void Server::mkcol(const MiddlewareFunction& func)
@@ -357,7 +354,7 @@ void Server::mkcol(const MiddlewareFunction& func)
 
 void Server::mkcol(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_MKCOL, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_MKCOL, flags));
 }
 
 void Server::copy(const MiddlewareFunction& func)
@@ -367,7 +364,7 @@ void Server::copy(const MiddlewareFunction& func)
 
 void Server::copy(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_COPY, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_COPY, flags));
 }
 
 void Server::move(const MiddlewareFunction& func)
@@ -377,7 +374,7 @@ void Server::move(const MiddlewareFunction& func)
 
 void Server::move(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_MOVE, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_MOVE, flags));
 }
 
 void Server::propfind(const MiddlewareFunction& func)
@@ -387,7 +384,7 @@ void Server::propfind(const MiddlewareFunction& func)
 
 void Server::propfind(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_PROPFIND, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_PROPFIND, flags));
 }
 
 void Server::proppatch(const MiddlewareFunction& func)
@@ -397,7 +394,7 @@ void Server::proppatch(const MiddlewareFunction& func)
 
 void Server::proppatch(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_PROPPATCH, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_PROPPATCH, flags));
 }
 
 void Server::lock(const MiddlewareFunction& func)
@@ -407,7 +404,7 @@ void Server::lock(const MiddlewareFunction& func)
 
 void Server::lock(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_LOCK, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_LOCK, flags));
 }
 
 void Server::unlock(const MiddlewareFunction& func)
@@ -417,7 +414,7 @@ void Server::unlock(const MiddlewareFunction& func)
 
 void Server::unlock(const char* path, const MiddlewareFunction& func, int flags)
 {
-   middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_UNLOCK, flags))));
+   middleWares.emplace_back(new Middleware(path, func, htp_method_UNLOCK, flags));
 }
 
 // upload hooks to catch file uploads w/ streaming
@@ -453,7 +450,7 @@ void Server::uploads(const char* path, const UploadFunction& func, Method method
          break;
    }
 
-   uploadWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, m, flags))));
+   uploadWares.emplace_back(new Middleware(path, func, m, flags));
 }
  
 //***************************************************************************
