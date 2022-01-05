@@ -49,11 +49,11 @@ class Property
       explicit Property(void* value)              : longValue(0), doubleValue(0), ptrValue(value) {}
 
       /*! \brief Retrieves the string value of the property. If no string value was set, returns an empty string object */
-      std::string& getStringValue()  { return stringValue; }
+      const std::string& getStringValue() const { return stringValue; }
       /*! \brief Retrieves the long value of the property. If no long value was set, returns 0 */
-      long getLongValue()            { return longValue; }
+      long getLongValue() const            { return longValue; }
       /*! \brief Retrieves the double value of the property. If no double value was set, returns 0 */
-      double getDoubleValue()        { return doubleValue; }
+      double getDoubleValue() const        { return doubleValue; }
       /*! \brief Retrieves the void* value casted to the template type. If no void* was set, returns a null-pointer */
       template<typename T> T* getObjectValue() { return  (T*)ptrValue; }
 
@@ -78,15 +78,15 @@ class PropertyList
    public:
 
       /*! \brief Retrieves the Property object of a given key */
-      Property* getProperty(std::string key) 
+      Property* getProperty(std::string key)
       {
          std::shared_ptr<Property> res= entries[key];
          return res ? res.get() : nullptr;
       }
-      
+
       /*! \brief Retrieves the value of a given key as a class-pointer value (of type `T`) */
       template<typename T> 
-      T* getObject(std::string key) 
+      T* getObject(std::string key)
       { 
          std::shared_ptr<Property> res= entries[key];
          return res ? res.get()->getObjectValue<T>() : nullptr;
@@ -98,7 +98,7 @@ class PropertyList
          std::shared_ptr<Property> res= entries[key];
          return res ? res.get()->getLongValue() : 0;
       }
-      
+
       /*! \brief Retrieves the double value of a given key */
       double getDouble(std::string key)
       {

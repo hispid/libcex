@@ -187,7 +187,7 @@ class Request
 
       Method getMethod();      /*!< \brief Returns the request's HTTP method */
       Protocol getProtocol();  /*!< \brief Returns the HTTP protocol version (1.0 or 1.1) */
-      int getPort();           /*!< \brief Returns the port, if present in the URI */
+      int getPort() const;     /*!< \brief Returns the port, if present in the URI */
       const char* getHost();   /*!< \brief Returns the hostname of the request */
       const char* getUrl();    /*!< \brief Returns the full URL of the request */
       const char* getPath();   /*!< \brief Returns the path-portion of the URL of the request */
@@ -362,7 +362,7 @@ class Response
       void setFlags(int newFlags) { flags= newFlags; }
 
       /*! \brief Returns the currently set flags of the response object */
-      int getFlags() { return flags; };
+      int getFlags() const { return flags; };
 
    private:
 

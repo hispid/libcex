@@ -108,7 +108,7 @@ size_t Request::getBodyLength()
    return body.size();
 }
 
-int Request::getPort()
+int Request::getPort() const
 {
    return port;
 }
