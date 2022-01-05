@@ -15,6 +15,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <random>
 
 #ifdef CEX_WITH_SSL
 #  include <openssl/err.h>
@@ -83,11 +84,13 @@ std::string randomStringHex(int len)
       res.append(buf);
    }
 #else
-   std::srand(std::time(0));
+   std::random_device rd;
+   std::mt19937 mt(rd());
+   std::uniform_int_distribution<unsigned char> dist(0, 255);
 
    for (int i = 0; i < len; i++)
    {
-      sprintf(buf, "%02X", (unsigned char)std::rand());
+      sprintf(buf, "%02X", static_cast<unsigned char>(dist(mt)));
       res.append(buf);
    }
 
