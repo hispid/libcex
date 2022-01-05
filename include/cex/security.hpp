@@ -28,7 +28,7 @@ Example:
 //***************************************************************************
 
 #include <string>
-#include <core.hpp>
+#include "core.hpp"
 
 namespace cex
 {

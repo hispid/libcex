@@ -26,8 +26,8 @@
 #include <vector>
 #include <regex>
 
-#include <plist.hpp>
-#include <cex/cex_config.h>
+#include "plist.hpp"
+#include "cex_config.hpp"
 
 #define IO_BUFFER_SIZE 128*1024
 

@@ -13,7 +13,7 @@
 // includes
 //***************************************************************************
 
-#include <cex/core.hpp>
+#include "cex/core.hpp"
 
 /*! \mainpage My Personal Index Page
  *
