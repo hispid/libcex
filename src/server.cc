@@ -15,6 +15,8 @@
 #include <cex/core.hpp>
 #include <cex/ssl.hpp>
 #include <cex/util.hpp>
+#include <memory>
+#include <utility>
 
 namespace cex
 {
@@ -123,7 +125,7 @@ int Server::start(bool block)
          startMutex.lock();
 
       eventBase= EventBasePtr(event_base_new(), &event_base_free);
-      std::unique_ptr<evhtp_t, decltype(&evhtp_free)> httpServer(evhtp_new(eventBase ? eventBase.get() : 0, NULL), &evhtp_free);
+      std::unique_ptr<evhtp_t, decltype(&evhtp_free)> httpServer(evhtp_new(eventBase ? eventBase.get() : nullptr, nullptr), &evhtp_free);
 
       if (!eventBase)
       {
@@ -162,7 +164,7 @@ int Server::start(bool block)
       // the function which should be used now (evhtp_use_threads_wexit) will be renamed to evhtp_use_threads at some point o_O
       
       if (serverConfig.threadCount > 1 && initialized)
-         evhtp_use_threads_wexit(httpServer.get(), NULL, NULL, serverConfig.threadCount, NULL);
+         evhtp_use_threads_wexit(httpServer.get(), nullptr, nullptr, serverConfig.threadCount, nullptr);
 //         evhtp_use_threads(httpServer.get(), NULL, serverConfig.threadCount, NULL);
 
       started= true;
@@ -202,7 +204,7 @@ int Server::start(bool block)
       // safe to call from different thread context as long as we have used
       // evthread_use_pthreads() (which is the case in Server::init())
 
-      event_base_loopexit(eventBase.get(), NULL);
+      event_base_loopexit(eventBase.get(), nullptr);
       t->join(); 
       delete t; 
    });
@@ -229,7 +231,7 @@ int Server::stop()
    if (backgroundThread)
       backgroundThread.reset();
    else
-      event_base_loopexit(eventBase.get(), NULL); 
+      event_base_loopexit(eventBase.get(), nullptr);
 
    started= startSignaled= false;
 
@@ -242,7 +244,7 @@ int Server::stop()
 
 void Server::use(const MiddlewareFunction& func)
 {
-   use(0, func);
+   use(nullptr, func);
 }
 
 //***************************************************************************
@@ -260,7 +262,7 @@ void Server::use(const char* path, const MiddlewareFunction& func, int flags)
 
 void Server::get(const MiddlewareFunction& func)
 {
-   get(0, func);
+   get(nullptr, func);
 }
 
 void Server::get(const char* path, const MiddlewareFunction& func, int flags)
@@ -270,7 +272,7 @@ void Server::get(const char* path, const MiddlewareFunction& func, int flags)
 
 void Server::put(const MiddlewareFunction& func)
 {
-   put(0, func);
+   put(nullptr, func);
 }
 
 void Server::put(const char* path, const MiddlewareFunction& func, int flags)
@@ -280,7 +282,7 @@ void Server::put(const char* path, const MiddlewareFunction& func, int flags)
 
 void Server::post(const MiddlewareFunction& func)
 {
-   post(0, func);
+   post(nullptr, func);
 }
 
 void Server::post(const char* path, const MiddlewareFunction& func, int flags)
@@ -290,7 +292,7 @@ void Server::post(const char* path, const MiddlewareFunction& func, int flags)
 
 void Server::head(const MiddlewareFunction& func)
 {
-   head(0, func);
+   head(nullptr, func);
 }
 
 void Server::head(const char* path, const MiddlewareFunction& func, int flags)
@@ -300,7 +302,7 @@ void Server::head(const char* path, const MiddlewareFunction& func, int flags)
 
 void Server::del(const MiddlewareFunction& func)
 {
-   del(0, func);
+   del(nullptr, func);
 }
 
 void Server::del(const char* path, const MiddlewareFunction& func, int flags)
@@ -310,7 +312,7 @@ void Server::del(const char* path, const MiddlewareFunction& func, int flags)
 
 void Server::connect(const MiddlewareFunction& func)
 {
-   connect(0, func);
+   connect(nullptr, func);
 }
 
 void Server::connect(const char* path, const MiddlewareFunction& func, int flags)
@@ -320,7 +322,7 @@ void Server::connect(const char* path, const MiddlewareFunction& func, int flags
 
 void Server::options(const MiddlewareFunction& func)
 {
-   options(0, func);
+   options(nullptr, func);
 }
 
 void Server::options(const char* path, const MiddlewareFunction& func, int flags)
@@ -330,7 +332,7 @@ void Server::options(const char* path, const MiddlewareFunction& func, int flags
 
 void Server::trace(const MiddlewareFunction& func)
 {
-   trace(0, func);
+   trace(nullptr, func);
 }
 
 void Server::trace(const char* path, const MiddlewareFunction& func, int flags)
@@ -340,7 +342,7 @@ void Server::trace(const char* path, const MiddlewareFunction& func, int flags)
 
 void Server::patch(const MiddlewareFunction& func)
 {
-   patch(0, func);
+   patch(nullptr, func);
 }
 
 void Server::patch(const char* path, const MiddlewareFunction& func, int flags)
@@ -348,10 +350,9 @@ void Server::patch(const char* path, const MiddlewareFunction& func, int flags)
    middleWares.push_back(std::move(std::unique_ptr<Middleware>(new Middleware(path, func, htp_method_PATCH, flags))));
 }
 
-
 void Server::mkcol(const MiddlewareFunction& func)
 {
-   mkcol(0, func);
+   mkcol(nullptr, func);
 }
 
 void Server::mkcol(const char* path, const MiddlewareFunction& func, int flags)
@@ -361,7 +362,7 @@ void Server::mkcol(const char* path, const MiddlewareFunction& func, int flags)
 
 void Server::copy(const MiddlewareFunction& func)
 {
-   copy(0, func);
+   copy(nullptr, func);
 }
 
 void Server::copy(const char* path, const MiddlewareFunction& func, int flags)
@@ -371,7 +372,7 @@ void Server::copy(const char* path, const MiddlewareFunction& func, int flags)
 
 void Server::move(const MiddlewareFunction& func)
 {
-   move(0, func);
+   move(nullptr, func);
 }
 
 void Server::move(const char* path, const MiddlewareFunction& func, int flags)
@@ -381,7 +382,7 @@ void Server::move(const char* path, const MiddlewareFunction& func, int flags)
 
 void Server::propfind(const MiddlewareFunction& func)
 {
-   propfind(0, func);
+   propfind(nullptr, func);
 }
 
 void Server::propfind(const char* path, const MiddlewareFunction& func, int flags)
@@ -391,7 +392,7 @@ void Server::propfind(const char* path, const MiddlewareFunction& func, int flag
 
 void Server::proppatch(const MiddlewareFunction& func)
 {
-   proppatch(0, func);
+   proppatch(nullptr, func);
 }
 
 void Server::proppatch(const char* path, const MiddlewareFunction& func, int flags)
@@ -401,7 +402,7 @@ void Server::proppatch(const char* path, const MiddlewareFunction& func, int fla
 
 void Server::lock(const MiddlewareFunction& func)
 {
-   lock(0, func);
+   lock(nullptr, func);
 }
 
 void Server::lock(const char* path, const MiddlewareFunction& func, int flags)
@@ -411,7 +412,7 @@ void Server::lock(const char* path, const MiddlewareFunction& func, int flags)
 
 void Server::unlock(const MiddlewareFunction& func)
 {
-   unlock(0, func);
+   unlock(nullptr, func);
 }
 
 void Server::unlock(const char* path, const MiddlewareFunction& func, int flags)
@@ -423,7 +424,7 @@ void Server::unlock(const char* path, const MiddlewareFunction& func, int flags)
 
 void Server::uploads(const UploadFunction& func)
 {
-   uploads(0, func);
+   uploads(nullptr, func);
 }
 
 void Server::uploads(const char* path, const UploadFunction& func, Method method, int flags)
@@ -464,8 +465,8 @@ evhtp_res Server::handleHeaders(evhtp_request_t* request, evhtp_headers_t* hdr, 
    // initially create a context object which will be used throughout the workflow.
    // holds the request, response and server pointers.
 
-   Server* serv= (Server*)arg;
-   Server::Context* ctx= new Server::Context(request, serv);
+   auto serv= reinterpret_cast<Server*>(arg);
+   auto ctx= new Server::Context(request, serv);
 
    // add hooks for body upload & finish of request. 'handleRequest' was already registered
    // in Server::listen
@@ -482,8 +483,8 @@ evhtp_res Server::handleHeaders(evhtp_request_t* request, evhtp_headers_t* hdr, 
 
 evhtp_res Server::handleBody(evhtp_request_t* req, struct evbuffer* buf, void* arg)
 {
-   Server::Context* ctx= (Server::Context*)arg;
-   std::vector<char>* body= &(ctx->req.get()->body);
+   auto ctx= reinterpret_cast<Server::Context*>(arg);
+   std::vector<char>* body= &(ctx->req->body);
 
    if (!body)                 // should never happen
       return EVHTP_RES_OK;
@@ -493,13 +494,13 @@ evhtp_res Server::handleBody(evhtp_request_t* req, struct evbuffer* buf, void* a
 
    // (1) check if we have attached upload middleware(s)
 
-   if (ctx->serv->uploadWares.size())
+   if (!ctx->serv->uploadWares.empty())
    {
-      std::vector<std::unique_ptr<Middleware>>::iterator it= ctx->serv->uploadWares.begin();
+      auto it= ctx->serv->uploadWares.begin();
 
       while (it != ctx->serv->uploadWares.end())
       {
-         if (!((*it).get()->match(ctx->req.get())))
+         if (!((*it)->match(ctx->req.get())))
          {
             ++it;
             continue;
@@ -520,8 +521,8 @@ evhtp_res Server::handleBody(evhtp_request_t* req, struct evbuffer* buf, void* a
          ev_ssize_t bytesCopied= evbuffer_copyout(buf, (void*)(body->data()), bytesReady);
 
 
-         ctx->req.get()->middlewarePath= (*it).get()->getPath();
-         (*it).get()->uploadFunc(ctx->req.get(), body->data(), bytesCopied);
+         ctx->req->middlewarePath= (*it)->getPath();
+         (*it)->uploadFunc(ctx->req.get(), body->data(), bytesCopied);
 
          return EVHTP_RES_OK;
       }
@@ -556,7 +557,7 @@ void Server::handleRequest(evhtp_request* req, void* arg)
    // actual request handling & middlewares as soon as we have headers + body ready.
    // the context is stored within the req as the cb-argument for the evhtp_hook_on_request_fini-hook.
 
-   Server* serv= (Server*)arg;
+   auto serv= reinterpret_cast<Server*>(arg);
    Server::Context* ctx= req && req->hooks ? (Server::Context*)req->hooks->on_request_fini_arg : nullptr;
 
    if (!ctx)
@@ -590,12 +591,9 @@ void Server::handleRequest(evhtp_request* req, void* arg)
 
    // call all registered handlers (route-based and general middlewares)
 
-   std::vector<std::unique_ptr<Middleware>>::iterator it= ctx->serv->middleWares.begin();
+   auto it= ctx->serv->middleWares.begin();
 
-   if (ctx->serv->middleWares.size())
-      it = ctx->serv->middleWares.begin();
-
-   if (!ctx->serv->middleWares.size() || it == ctx->serv->middleWares.end())
+   if (it == ctx->serv->middleWares.end())
    {
       ctx->res.get()->end(404);
       return;
@@ -611,23 +609,23 @@ void Server::handleRequest(evhtp_request* req, void* arg)
 
       if (it != ctx->serv->middleWares.end())
       {
-         if ((*it).get()->match(ctx->req.get()))
+         if ((*it)->match(ctx->req.get()))
          {
-            ctx->req.get()->middlewarePath= (*it).get()->getPath();
-            (*it).get()->func(ctx->req.get(), ctx->res.get(), next);
+            ctx->req.get()->middlewarePath= (*it)->getPath();
+            (*it)->func(ctx->req.get(), ctx->res.get(), next);
          }
          else
             next();
       }
    };
 
-   // call next handler OR next-function, if next handler doesnt match.
+   // call next handler OR next-function, if next handler doesn't match.
    // if no middleware matched, the request will hang (thats intended).
 
-   if ((*it).get()->match(ctx->req.get()))
+   if ((*it)->match(ctx->req.get()))
    {
-      ctx->req.get()->middlewarePath= (*it).get()->getPath();
-      (*it).get()->func(ctx->req.get(), ctx->res.get(), next);
+      ctx->req.get()->middlewarePath= (*it)->getPath();
+      (*it)->func(ctx->req.get(), ctx->res.get(), next);
    }
    else
       next();
@@ -641,7 +639,7 @@ evhtp_res Server::handleFinished(evhtp_request_t* req, void* arg)
 {
    // forget the request context we created
 
-   Server::Context* ctx= (Server::Context*)arg;
+   auto ctx= reinterpret_cast<Server::Context*>(arg);
 
    delete ctx;
    

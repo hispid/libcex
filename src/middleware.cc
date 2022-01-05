@@ -74,7 +74,7 @@ bool Middleware::match(Request* req)
    std::cmatch m;
    std::regex_search(req->getUrl(), m, rep);
 
-   return m.size() > 0;
+   return !m.empty();
 }
 
 //***************************************************************************

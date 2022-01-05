@@ -40,17 +40,17 @@ namespace cex
  
 Example:
 ```
-   std::shared_ptr<cex::SessionOptions> opts(new cex::SessionOptions());
+   auto opts = std::make_shared<cex::SessionOptions>();
 
-   opts.get()->expires = 60*60*24*3;
-   opts.get()->maxAge= 144; 
-   opts.get()->domain= "my.domain.de"; 
-   opts.get()->path= "/somePath"; 
-   opts.get()->name= "sessionID"; 
-   opts.get()->secure= false; 
-   opts.get()->httpOnly=true; 
-   opts.get()->sameSiteLax= true; 
-   opts.get()->sameSiteStrict= true;
+   opts->expires = 60*60*24*3;
+   opts->maxAge= 144;
+   opts->domain= "my.domain.de";
+   opts->path= "/somePath";
+   opts->name= "sessionID";
+   opts->secure= false;
+   opts->httpOnly=true;
+   opts->sameSiteLax= true;
+   opts->sameSiteStrict= true;
    
    app.use(cex::sessionHandler(opts));
 ```

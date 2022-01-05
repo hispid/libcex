@@ -71,19 +71,19 @@ enum Referer
  
 Example:
 ```
-   std::shared_ptr<cex::SecurityOptions> opts(new cex::SecurityOptions());
+   auto opts = std::make_shared<cex::SecurityOptions>();
 
-   opts.get()->hpkpKeys.push_back("someKey");
-   opts.get()->hpkpKeys.push_back("someKey2");
-   opts.get()->hpkpKeys.push_back("someKey3");
-   opts.get()->hpkpMaxAge= 183400;
-   opts.get()->xFrameAllow= cex::xfFrom;
-   opts.get()->xFrameFrom= "my.domain.de";
-   opts.get()->stsMaxAge= 183400;
-   opts.get()->stsPreload= true;
-   opts.get()->ieNoOpen= cex::no;
-   opts.get()->noDNSPrefetch= cex::no;
-   opts.get()->referrer= cex::refOriginWhenCrossOrigin;
+   opts->hpkpKeys.push_back("someKey");
+   opts->hpkpKeys.push_back("someKey2");
+   opts->hpkpKeys.push_back("someKey3");
+   opts->hpkpMaxAge= 183400;
+   opts->xFrameAllow= cex::xfFrom;
+   opts->xFrameFrom= "my.domain.de";
+   opts->stsMaxAge= 183400;
+   opts->stsPreload= true;
+   opts->ieNoOpen= cex::no;
+   opts->noDNSPrefetch= cex::no;
+   opts->referrer= cex::refOriginWhenCrossOrigin;
 
    app.use(cex::securityHeaders(opts));
 ```

@@ -10,7 +10,7 @@
 // includes
 //***************************************************************************
 
-#include <time.h>
+#include <ctime>
 
 #include <cex/session.hpp>
 #include <cex/util.hpp>
@@ -33,10 +33,10 @@ MiddlewareFunction sessionHandler(const std::shared_ptr<SessionOptions>& opts)
    {
       SessionOptions* theOpts = opts.get() ? opts.get() : &defaultSessionOptions;
       std::string sessionIDName= theOpts->name;
-      const char* cookie = req->get("Cookie");
+      auto cookie = req->get("Cookie");
 
       if (!sessionIDName.length())
-	 sessionIDName= "sessionId";
+	  sessionIDName= "sessionId";
 
       if (cookie)
       {
@@ -44,15 +44,15 @@ MiddlewareFunction sessionHandler(const std::shared_ptr<SessionOptions>& opts)
 
 	 std::vector<std::string> splitted(splitString(cookie, ';'));
 
-	 for (std::vector<std::string>::iterator it = splitted.begin(); it != splitted.end(); ++it)
+	 for (const auto& it : splitted)
 	 {
 	    std::string cookieName, cookieValue;
-	    std::vector<std::string> cookieContents(splitString((*it).c_str(), '='));
-	    std::vector<std::string>::iterator cookieIt = cookieContents.begin();
+	    std::vector<std::string> cookieContents(splitString(it.c_str(), '='));
+	    auto cookieIt = cookieContents.begin();
 
 	    // split again by = to get cookie name & value. then try to find 'our' cookie
 
-	    if (cookieContents.size() && cookieIt != cookieContents.end()) 
+	    if (!cookieContents.empty() && cookieIt != cookieContents.end())
 	    {
 	       cookieName= *cookieIt;
 	       ++cookieIt;
@@ -87,7 +87,7 @@ MiddlewareFunction sessionHandler(const std::shared_ptr<SessionOptions>& opts)
 
 	 if (theOpts->expires > 0)
 	 {
-            time_t expDate = time(0) + theOpts->expires;
+            time_t expDate = time(nullptr) + theOpts->expires;
 	    struct tm* timeinfo;
 
 	    timeinfo= localtime(&expDate);

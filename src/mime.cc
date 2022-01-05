@@ -21,7 +21,7 @@ namespace cex
 
 int Server::initMimeTypes()
 {
-   if (mimeTypes.get()->size())
+   if (!mimeTypes->empty())
       return done;
 
    registerMimeType("ai", "application/postscript", false);
@@ -192,7 +192,7 @@ int Server::initMimeTypes()
 
 void Server::registerMimeType(const char* extension, const char* mime, bool binary)
 {
-   (*mimeTypes.get())[std::string(extension)]= std::make_pair(mime, binary);
+   (*mimeTypes)[std::string(extension)]= std::make_pair(mime, binary);
 }
 
 //***************************************************************************

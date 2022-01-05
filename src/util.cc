@@ -10,8 +10,7 @@
 // includes
 //***************************************************************************
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
 #include <sstream>
 #include <vector>
 #include <algorithm>

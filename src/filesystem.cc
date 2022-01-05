@@ -14,8 +14,7 @@
 #include <cex/filesystem.hpp>
 
 #include <fstream>
-#include <errno.h>
-#include <ctype.h>
+#include <cctype>
 
 namespace cex
 {
@@ -28,8 +27,8 @@ static struct FilesystemOptions defaultOptions;
 
 MiddlewareFunction filesystem(const std::string& aPath)
 {
-   std::shared_ptr<FilesystemOptions> opts(new FilesystemOptions());
-   opts.get()->rootPath= aPath;
+   auto opts = std::make_shared<FilesystemOptions>();
+   opts->rootPath= aPath;
 
    return filesystem(opts);
 }
@@ -39,8 +38,8 @@ MiddlewareFunction filesystem(const std::shared_ptr<FilesystemOptions>& opts)
    // opts is CAPTURED, thus held for the lifetime of the lambda. this is INTENDED, and NOT a leak,
    // so the shared_ptr is not an issue
 
-   if (opts.get() && !opts.get()->rootPath.empty() && opts.get()->rootPath.back() != '/')
-      opts.get()->rootPath.push_back('/');
+   if (opts.get() && !opts->rootPath.empty() && opts->rootPath.back() != '/')
+      opts->rootPath.push_back('/');
 
    MiddlewareFunction res = [opts](Request* req, Response* res, const std::function<void()>& next)
    {
@@ -57,7 +56,7 @@ MiddlewareFunction filesystem(const std::shared_ptr<FilesystemOptions>& opts)
       const char* p= req->getUrl();
       const char* urlBeg= p;
       const char* middlewarePath= req->getMiddlewarePath() ? req->getMiddlewarePath() : "";
-      int middlewarePathLen= strlen(middlewarePath);
+      size_t middlewarePathLen= strlen(middlewarePath);
       MimeType type = std::make_pair("text/plain", false);
 
       if (!p || !strlen(p))

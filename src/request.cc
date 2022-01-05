@@ -37,7 +37,7 @@ Request::Request(evhtp_request* req)
 const char* Request::get(const char* headerName) 
 { 
    if (!req || !req->headers_in)
-      return 0; 
+      return nullptr;
 
    return evhtp_header_find(req->headers_in, headerName);
 }
@@ -61,11 +61,11 @@ void Request::eachHeader(PairCallbackFunction cb)
 const char* Request::getQueryParam(const char* name) 
 { 
    if (!req || !req->uri || !req->uri->query)
-      return 0;
+      return nullptr;
 
    evhtp_kv_t* keyValue= evhtp_kvs_find_kv((evhtp_kvs_t*)req->uri->query, name);
 
-   return keyValue ? keyValue->val : 0;
+   return keyValue ? keyValue->val : nullptr;
 }
 
 //***************************************************************************
@@ -86,7 +86,7 @@ void Request::eachQueryParam(PairCallbackFunction cb)
 
 int Request::keyValueIteratorCb(evhtp_kv_t * kv, void * arg)
 {
-   bool stop= (*((PairCallbackFunction*)arg))(kv ? (const char*)kv->key : 0, kv ? (const char*)kv->val : 0);
+   bool stop= (*((PairCallbackFunction*)arg))(kv ? (const char*)kv->key : nullptr, kv ? (const char*)kv->val : nullptr);
 
    if (stop)
       return 1;
@@ -159,8 +159,8 @@ void Request::parse()
    port= na;
    method= unknownMethod;
 
-   uri= req->uri && req->uri->path ? req->uri->path : 0;
-   authority= req->uri ? req->uri->authority : 0;
+   uri= req->uri && req->uri->path ? req->uri->path : nullptr;
+   authority= req->uri ? req->uri->authority : nullptr;
    evhtp_method= req->method;
 
    switch (evhtp_method)

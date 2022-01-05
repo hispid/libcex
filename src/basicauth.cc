@@ -37,7 +37,7 @@ MiddlewareFunction basicAuth()
    {
       const char* authenticationHeader= req->get("Authorization");
 
-      if (!authenticationHeader || strncmp(authenticationHeader, "Basic", 5) || strlen(authenticationHeader) < 7)
+      if (!authenticationHeader || strncmp(authenticationHeader, "Basic", 5) != 0 || strlen(authenticationHeader) < 7)
       {
          next();
          return;
@@ -77,7 +77,7 @@ MiddlewareFunction basicAuth()
       {
          std::vector<std::string> splitted= splitString(str.c_str(), ':', 0);
 
-         if (splitted.size())
+         if (!splitted.empty())
          {
             req->properties.set("basicUsername", splitted[0]);
 

@@ -22,7 +22,7 @@ namespace cex
 
 static struct SecurityOptions defaultOptions;
 
-SecurityOptions::SecurityOptions() 
+SecurityOptions::SecurityOptions()
 { 
    ieNoOpen= disableCache= noSniff= xssProtection= true; 
    noDNSPrefetch= yes; 
@@ -69,10 +69,10 @@ MiddlewareFunction securityHeaders(const std::shared_ptr<SecurityOptions>& opts)
 
       // Public-Key-Pins
 
-      if (theOpts->hpkpMaxAge > 0 && theOpts->hpkpKeys.size())
+      if (theOpts->hpkpMaxAge > 0 && !theOpts->hpkpKeys.empty())
       {
          std::string pin;
-         std::vector<std::string>::iterator it= theOpts->hpkpKeys.begin();
+         auto it= theOpts->hpkpKeys.begin();
          char age[100];
 
          sprintf(age, "%d", theOpts->hpkpMaxAge);
