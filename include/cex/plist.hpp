@@ -9,7 +9,7 @@
 #ifndef __PLIST_HPP__
 #define __PLIST_HPP__
 
-/*! \file plist.hpp 
+/*! \file plist.hpp
   \brief Implementation of a simple propertylist based on `std::unordered_map`
 */
 
@@ -34,20 +34,24 @@ namespace cex
   A property can have several values, one for each of the types (string, long, double, void*)
   */
 
+typedef void (*prop_deleter)(void *);
+
 class Property
 {
    public:
 
       /*! \brief Constructs a new property with a string value */
-      explicit Property(const std::string& value) : stringValue(value), longValue(0), doubleValue(0), ptrValue(nullptr) {}
+      explicit Property(const std::string& value) : stringValue(value), longValue(0), doubleValue(0), ptrValue(nullptr), ptrDeleter(nullptr) {}
       /*! \brief Constructs a new property with a string value (moving the value) */
-      explicit Property(std::string&& value)      : stringValue(std::move(value)), longValue(0), doubleValue(0), ptrValue(nullptr) {}
+      explicit Property(std::string&& value)      : stringValue(std::move(value)), longValue(0), doubleValue(0), ptrValue(nullptr), ptrDeleter(nullptr) {}
       /*! \brief Constructs a new property with a long value */
-      explicit Property(long value)               : longValue(value), doubleValue(0), ptrValue(nullptr) {}
+      explicit Property(long value)               : longValue(value), doubleValue(0), ptrValue(nullptr), ptrDeleter(nullptr) {}
       /*! \brief Constructs a new property with a double value */
-      explicit Property(double value)             : longValue(0), doubleValue(value), ptrValue(nullptr) {}
+      explicit Property(double value)             : longValue(0), doubleValue(value), ptrValue(nullptr), ptrDeleter(nullptr) {}
       /*! \brief Constructs a new property with a void* value */
-      explicit Property(void* value)              : longValue(0), doubleValue(0), ptrValue(value) {}
+      explicit Property(void* value, prop_deleter pd)   : longValue(0), doubleValue(0), ptrValue(value), ptrDeleter(pd) {}
+      /*! \brief Destructs property with a deleter, if any */
+      ~Property() { if (ptrDeleter) ptrDeleter(ptrValue); }
 
       /*! \brief Retrieves the string value of the property. If no string value was set, returns an empty string object */
       const std::string& getStringValue() const { return stringValue; }
@@ -59,11 +63,11 @@ class Property
       template<typename T> T* getObjectValue()  { return  (T*)ptrValue; }
 
    private:
-
       std::string stringValue;
       long longValue;
       double doubleValue;
       void* ptrValue;
+      prop_deleter ptrDeleter;
 };
 
 //***************************************************************************
@@ -86,9 +90,9 @@ class PropertyList
       }
 
       /*! \brief Retrieves the value of a given key as a class-pointer value (of type `T`) */
-      template<typename T> 
+      template<typename T>
       T* getObject(const std::string& key)
-      { 
+      {
          std::shared_ptr<Property> res= entries[key];
          return res ? res.get()->getObjectValue<T>() : nullptr;
       }
@@ -123,7 +127,7 @@ class PropertyList
       /*! \brief Sets the value of a key to a double value. Replaces previous values of a key */
       void set(const std::string& key, double value)        { entries[key]= std::make_shared<Property>(value); }
       /*! \brief Sets the value of a key to a void* value. Replaces previous values of a key */
-      void set(const std::string& key, void* value)         { entries[key]= std::make_shared<Property>(value); }
+      void set(const std::string& key, void* value, prop_deleter pd = nullptr)  { entries[key]= std::make_shared<Property>(value, pd); }
 
       /*! \brief Checks if the list contains a given key */
       bool has(std::string key)    { return entries.count(key) > 0; }
@@ -133,7 +137,7 @@ class PropertyList
 
    private:
 
-      std::unordered_map<std::string, std::shared_ptr<Property>> entries;
+      std::map<std::string, std::shared_ptr<Property>> entries;
 };
 
 //***************************************************************************
