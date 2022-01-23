@@ -130,10 +130,10 @@ class PropertyList
       void set(const std::string& key, void* value, prop_deleter pd = nullptr)  { entries[key]= std::make_shared<Property>(value, pd); }
 
       /*! \brief Checks if the list contains a given key */
-      bool has(std::string key)    { return entries.count(key) > 0; }
+      bool has(const std::string& key)    { return entries.count(key) > 0; }
 
       /*! \brief Removes a key from the list and returns the number of elements removed (0 or 1) */
-      size_t remove(std::string key) { return entries.erase(key); }
+      size_t remove(const std::string& key) { return entries.erase(key); }
 
    private:
 
