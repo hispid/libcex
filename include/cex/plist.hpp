@@ -85,37 +85,37 @@ class PropertyList
       /*! \brief Retrieves the Property object of a given key */
       Property* getProperty(const std::string& key)
       {
-         std::shared_ptr<Property> res= entries[key];
-         return res ? res.get() : nullptr;
+         auto res= entries.find(key);
+         return res != entries.end() ? res->second.get() : nullptr;
       }
 
       /*! \brief Retrieves the value of a given key as a class-pointer value (of type `T`) */
       template<typename T>
       T* getObject(const std::string& key)
       {
-         std::shared_ptr<Property> res= entries[key];
-         return res ? res.get()->getObjectValue<T>() : nullptr;
+         auto res= entries.find(key);
+         return res != entries.end() ? res->second.get()->getObjectValue<T>() : nullptr;
       }
 
       /*! \brief Retrieves the long value of a given key */
       long getLong(const std::string& key)
       {
-         std::shared_ptr<Property> res= entries[key];
-         return res ? res.get()->getLongValue() : 0;
+         auto res= entries.find(key);
+         return res != entries.end() ? res->second.get()->getLongValue() : 0;
       }
 
       /*! \brief Retrieves the double value of a given key */
       double getDouble(const std::string& key)
       {
-         std::shared_ptr<Property> res= entries[key];
-         return res ? res.get()->getDoubleValue() : 0;
+         auto res= entries.find(key);
+         return res != entries.end() ? res->second.get()->getDoubleValue() : 0;
       }
 
       /*! \brief Retrieves the string value of a given key */
       std::string getString(const std::string& key)
       {
-         std::shared_ptr<Property> res= entries[key];
-         return res ? res.get()->getStringValue() : std::string();
+         auto res= entries.find(key);
+         return res != entries.end() ? res->second.get()->getStringValue() : std::string();
       }
 
       /*! \brief Sets the value of a key to a string value. Replaces previous values of a key */
