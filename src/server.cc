@@ -16,7 +16,9 @@
 #include <utility>
 #include <cstring>
 #ifdef EVHTP_WS_SUPPORT
+extern "C" {
 #include <evhtp/ws/evhtp_ws.h>
+}
 #endif
 #ifdef CEX_WITH_SSL
 #include <evhtp/sslutils.h>
