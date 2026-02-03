@@ -158,15 +158,13 @@ int Server::start(bool block)
       // attach static request callback function, init number of threads, bind socket
       // DON'T use evhtp_set_gencb, because we need the return-cb to attach the
       // evhtp_hook_on_headers callback function HERE.
-
-      //evhtp_set_gencb(httpServer.get(), Server::handleRequest, this);
-
-      auto cb= evhtp_set_cb(httpServer.get(), "", Server::handleRequest, this);
-
-      evhtp_callback_set_hook(cb, evhtp_hook_on_headers, (evhtp_hook)Server::handleHeaders, this);
+      //
+      // IMPORTANT: WebSocket handlers MUST be registered BEFORE the general ""
+      // handler. In libevhtp_ws, evhtp_set_cb("", ...) creates a callback with
+      // len=0, and strncmp(path, "", 0)==0 matches ANY path, so "" would
+      // intercept /ws requests if registered first.
 
 #ifdef EVHTP_WS_SUPPORT
-      // Register WebSocket handlers
       for (auto& handler : websocketHandlers)
       {
          std::string wsPath = "ws:";
@@ -174,10 +172,12 @@ int Server::start(bool block)
             wsPath += "/";
          else
             wsPath += handler->path;
-         
          evhtp_set_cb(httpServer.get(), wsPath.c_str(), Server::handleWebSocketRequest, handler.get());
       }
 #endif
+
+      auto cb= evhtp_set_cb(httpServer.get(), "", Server::handleRequest, this);
+      evhtp_callback_set_hook(cb, evhtp_hook_on_headers, (evhtp_hook)Server::handleHeaders, this);
 
       evhtp_bind_socket(httpServer.get(), serverConfig.address.c_str(), serverConfig.port, 128);
 

@@ -114,6 +114,29 @@ bool WebSocket::isOpen() const
 }
 
 //***************************************************************************
+// getHeader
+//***************************************************************************
+
+const char* WebSocket::getHeader(const char* name) const
+{
+   if (!req || !req->headers_in || !name)
+      return nullptr;
+   return evhtp_header_find(req->headers_in, name);
+}
+
+//***************************************************************************
+// getQueryParam
+//***************************************************************************
+
+const char* WebSocket::getQueryParam(const char* name) const
+{
+   if (!req || !req->uri || !req->uri->query || !name)
+      return nullptr;
+   evhtp_kv_t* kv = evhtp_kvs_find_kv((evhtp_kvs_t*)req->uri->query, name);
+   return kv ? kv->val : nullptr;
+}
+
+//***************************************************************************
 } // namespace cex
 
 #endif // EVHTP_WS_SUPPORT

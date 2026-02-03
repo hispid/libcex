@@ -421,6 +421,16 @@ class WebSocket
         \return `true` if the connection is open, otherwise `false` */
       bool isOpen() const;
 
+      /*! \brief Returns the value of an HTTP header from the handshake request
+        \param name Header name (e.g. "Authorization")
+        \return Header value or nullptr if not found */
+      const char* getHeader(const char* name) const;
+
+      /*! \brief Returns the value of a URL query parameter from the handshake
+        \param name Parameter name (e.g. "token")
+        \return Parameter value or nullptr if not found */
+      const char* getQueryParam(const char* name) const;
+
    private:
       evhtp_request* req;
 };
