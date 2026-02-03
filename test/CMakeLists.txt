@@ -16,7 +16,7 @@ foreach(file ${files})
    add_executable(${BASENAME} ${file})
    
    target_compile_features(${BASENAME} PRIVATE cxx_range_for)
-   target_link_libraries(${BASENAME} cex pthread ${LIBEVHTP_LIBRARIES} ${LIBCEX_EXTERNAL_LIBS})
+   target_link_libraries(${BASENAME} cex pthread ${LIBEVHTP_WS_LIBRARIES} ${LIBCEX_EXTERNAL_LIBS})
    
    add_test(${BASENAME} ${BASENAME} "--reporter=spec" WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
 endforeach()

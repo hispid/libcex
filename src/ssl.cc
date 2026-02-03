@@ -27,7 +27,7 @@ namespace cex
 // verify certificate
 //***************************************************************************
 
-int Server::verifyCert(int ok, X509_STORE_CTX * store) 
+int Server::verifyCert(int ok, evhtp_x509_store_ctx_t * store) 
 {
    char buf[256];
 

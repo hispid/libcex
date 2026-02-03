@@ -14,6 +14,13 @@
 #include <cex/ssl.hpp>
 #include <cex/util.hpp>
 #include <utility>
+#include <cstring>
+#ifdef EVHTP_WS_SUPPORT
+#include <evhtp/ws/evhtp_ws.h>
+#endif
+#ifdef CEX_WITH_SSL
+#include <evhtp/sslutils.h>
+#endif
 
 namespace cex
 {
@@ -155,6 +162,21 @@ int Server::start(bool block)
       auto cb= evhtp_set_cb(httpServer.get(), "", Server::handleRequest, this);
 
       evhtp_callback_set_hook(cb, evhtp_hook_on_headers, (evhtp_hook)Server::handleHeaders, this);
+
+#ifdef EVHTP_WS_SUPPORT
+      // Register WebSocket handlers
+      for (auto& handler : websocketHandlers)
+      {
+         std::string wsPath = "ws:";
+         if (handler->path.empty())
+            wsPath += "/";
+         else
+            wsPath += handler->path;
+         
+         evhtp_set_cb(httpServer.get(), wsPath.c_str(), Server::handleWebSocketRequest, handler.get());
+      }
+#endif
+
       evhtp_bind_socket(httpServer.get(), serverConfig.address.c_str(), serverConfig.port, 128);
 
       // function 'evhtp_use_threads' is marked deprecated, but according to libevhtp source
@@ -180,7 +202,7 @@ int Server::start(bool block)
       // when done, properly unbind httpSever. will be freed by unique_ptr
       // event_base will be free'd by stop()
 
-      evhtp_unbind_socket(httpServer.get());
+      evhtp_unbind_sockets(httpServer.get());
    };
 
    // execute the main start function from main/calling thread ...
@@ -452,6 +474,88 @@ void Server::uploads(const char* path, const UploadFunction& func, Method method
 
    uploadWares.emplace_back(new Middleware(path, func, m, flags));
 }
+
+#ifdef EVHTP_WS_SUPPORT
+//***************************************************************************
+// websocket
+//***************************************************************************
+
+void Server::websocket(const char* path, 
+                       const WebSocketOpenFunction& onOpen,
+                       const WebSocketMessageFunction& onMessage,
+                       const WebSocketCloseFunction& onClose,
+                       const WebSocketErrorFunction& onError,
+                       int flags)
+{
+   websocketHandlers.emplace_back(new WebSocketHandler(path, onOpen, onMessage, onClose, onError, flags));
+}
+
+//***************************************************************************
+// handleWebSocketRequest
+//***************************************************************************
+
+void Server::handleWebSocketRequest(evhtp_request* req, void* arg)
+{
+   auto handler= reinterpret_cast<WebSocketHandler*>(arg);
+   
+   if (!handler || !req)
+      return;
+
+   // Check if this is the initial connection (handshake already done by libevhtp_ws)
+   if (!req->websock)
+   {
+      // This shouldn't happen if registered with "ws:" prefix
+      evhtp_send_reply(req, 400);
+      return;
+   }
+
+   // Check if we have data in the buffer (message received)
+   size_t bufLen = evbuffer_get_length(req->buffer_in);
+   
+   if (bufLen == 0)
+   {
+      // Initial connection - call onOpen
+      if (handler->onOpen)
+      {
+         WebSocket ws(req);
+         handler->onOpen(&ws);
+      }
+      return;
+   }
+
+   // Message received - call onMessage
+   if (handler->onMessage && bufLen > 0)
+   {
+      // Get the data from buffer
+      const char* data = (const char*)evbuffer_pullup(req->buffer_in, -1);
+      
+      // Convert opcode to FrameType
+      WebSocket::FrameType frameType = WebSocket::wsText;
+      switch (req->ws_opcode)
+      {
+         case OP_TEXT:  frameType = WebSocket::wsText; break;
+         case OP_BIN:   frameType = WebSocket::wsBinary; break;
+         case OP_PING:  frameType = WebSocket::wsPing; break;
+         case OP_PONG:  frameType = WebSocket::wsPong; break;
+         case OP_CLOSE: frameType = WebSocket::wsClose; break;
+         default:       frameType = WebSocket::wsText; break;
+      }
+
+      WebSocket ws(req);
+      handler->onMessage(&ws, data, bufLen, frameType);
+   }
+
+   // Check if connection should be closed
+   if (req->disconnect)
+   {
+      if (handler->onClose)
+      {
+         WebSocket ws(req);
+         handler->onClose(&ws);
+      }
+   }
+}
+#endif
  
 //***************************************************************************
 // handle headers (step 1)

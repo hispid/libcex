@@ -5,6 +5,8 @@
 
 #undef CEX_WITH_SSL
 #undef CEX_WITH_ZLIB
+#undef EVHTP_WS_SUPPORT
 
 #cmakedefine CEX_WITH_SSL
 #cmakedefine CEX_WITH_ZLIB
+#cmakedefine EVHTP_WS_SUPPORT

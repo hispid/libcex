@@ -371,6 +371,86 @@ class Response
 };
 
 //***************************************************************************
+// class WebSocket
+//***************************************************************************
+#ifdef EVHTP_WS_SUPPORT
+/*! \class WebSocket
+  \brief Represents a WebSocket connection.
+
+  Provides methods for sending messages and handling WebSocket events.
+*/
+class WebSocket
+{
+   friend class Server;
+
+   public:
+
+      /*! \brief WebSocket frame types */
+      enum FrameType
+      {
+         wsText=   0x01,  /*!< Text frame */
+         wsBinary= 0x02,  /*!< Binary frame */
+         wsPing=   0x09,  /*!< Ping frame */
+         wsPong=   0x0A,  /*!< Pong frame */
+         wsClose=  0x08   /*!< Close frame */
+      };
+
+      /*! \brief Constructs a new WebSocket object
+        \param req The underlying `libevhtp` request object */
+      explicit WebSocket(evhtp_request* req);
+
+      /*! \brief Sends a text message to the client
+        \param message The text message to send */
+      int send(const char* message);
+
+      /*! \brief Sends a binary message to the client
+        \param data The binary data to send
+        \param len The length of the data */
+      int send(const char* data, size_t len);
+
+      /*! \brief Sends a WebSocket frame
+        \param data The data to send
+        \param len The length of the data
+        \param frameType The type of frame to send */
+      int sendFrame(const char* data, size_t len, FrameType frameType);
+
+      /*! \brief Closes the WebSocket connection */
+      void close();
+
+      /*! \brief Checks if the WebSocket connection is open
+        \return `true` if the connection is open, otherwise `false` */
+      bool isOpen() const;
+
+   private:
+      evhtp_request* req;
+};
+
+/*! \public
+   \brief A function which is called when a WebSocket connection is established.
+   \param ws The WebSocket object representing the connection */
+typedef std::function<void(WebSocket* ws)> WebSocketOpenFunction;
+
+/*! \public
+   \brief A function which is called when a WebSocket message is received.
+   \param ws The WebSocket object representing the connection
+   \param data The received message data
+   \param len The length of the received message
+   \param frameType The type of the received frame */
+typedef std::function<void(WebSocket* ws, const char* data, size_t len, WebSocket::FrameType frameType)> WebSocketMessageFunction;
+
+/*! \public
+   \brief A function which is called when a WebSocket connection is closed.
+   \param ws The WebSocket object representing the connection */
+typedef std::function<void(WebSocket* ws)> WebSocketCloseFunction;
+
+/*! \public
+   \brief A function which is called when a WebSocket error occurs.
+   \param ws The WebSocket object representing the connection
+   \param error The error message */
+typedef std::function<void(WebSocket* ws, const char* error)> WebSocketErrorFunction;
+#endif
+
+//***************************************************************************
 // class Middleware
 //***************************************************************************
 /*! \class Middleware
@@ -766,6 +846,24 @@ class Server
          \param func The UploadFunction which shall be called upon receiving request body data
          \param flags Flags controlling the URL matching behaviour (see Middleware)*/
       void uploads(const char* path, const UploadFunction& func, Method method= methodPOST, int flags= Middleware::fMatchContain);
+
+#ifdef EVHTP_WS_SUPPORT
+      // WebSocket support
+
+      /*! \brief Attaches a WebSocket handler for the given path
+        \param path The URL path which shall be compared against the request URL
+        \param onOpen Function called when WebSocket connection is established
+        \param onMessage Function called when a WebSocket message is received
+        \param onClose Function called when WebSocket connection is closed
+        \param onError Function called when a WebSocket error occurs
+        \param flags Flags controlling the URL matching behaviour (see Middleware) */
+      void websocket(const char* path, 
+                     const WebSocketOpenFunction& onOpen,
+                     const WebSocketMessageFunction& onMessage,
+                     const WebSocketCloseFunction& onClose = nullptr,
+                     const WebSocketErrorFunction& onError = nullptr,
+                     int flags= Middleware::fMatchContain);
+#endif
  
       // tools
 
@@ -800,6 +898,55 @@ class Server
 
       std::vector<std::unique_ptr<Middleware>> middleWares;
       std::vector<std::unique_ptr<Middleware>> uploadWares;
+
+#ifdef EVHTP_WS_SUPPORT
+      struct WebSocketHandler
+      {
+         std::string path;
+         WebSocketOpenFunction onOpen;
+         WebSocketMessageFunction onMessage;
+         WebSocketCloseFunction onClose;
+         WebSocketErrorFunction onError;
+         int flags;
+         std::regex rep;
+
+         WebSocketHandler(const char* p, 
+                         const WebSocketOpenFunction& open,
+                         const WebSocketMessageFunction& msg,
+                         const WebSocketCloseFunction& close,
+                         const WebSocketErrorFunction& err,
+                         int f)
+            : path(p ? p : ""), onOpen(open), onMessage(msg), onClose(close), onError(err), flags(f)
+         {
+            if (p && (f & Middleware::fMatchRegex))
+               rep = std::regex(p);
+         }
+
+         bool match(Request* req)
+         {
+            if (!req)
+               return false;
+
+            const char* reqPath = req->getPath();
+
+            if (path.empty())
+               return true;
+
+            if (flags & Middleware::fMatchRegex)
+               return std::regex_match(reqPath, rep);
+            else if (flags & Middleware::fMatchCompare)
+               return path == reqPath;
+            else if (flags & Middleware::fMatchContain)
+               return strstr(reqPath, path.c_str()) != nullptr;
+
+            return false;
+         }
+      };
+
+      std::vector<std::unique_ptr<WebSocketHandler>> websocketHandlers;
+
+      static void handleWebSocketRequest(evhtp_request* req, void* arg);
+#endif
 
       Config serverConfig;
 
