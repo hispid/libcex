@@ -33,6 +33,7 @@ int main()
 `libcex`  requires the following libraries:
 
 - [libevhtp](https://github.com/criticalstack/libevhtp)
+  - For WebSocket support, use [libevhtp_ws](https://github.com/hispid/libevhtp_ws) instead
 - OpenSSL (optional) - for HTTPS support
 - zlib (optional) - for compression of response payloads
 
