@@ -28,7 +28,8 @@ list(APPEND LIBCEX_EXTERNAL_INCLUDES ${LIBEVHTP_INCLUDE_DIRS})
 list(APPEND package_deps LibEvhtp)
 
 # Find optional libraries openssl + zlib
-if (NOT CEX_DISABLE_SSL)
+# Check if libevhtp has SSL support first
+if (NOT CEX_DISABLE_SSL AND LIBEVHTP_SSL_SUPPORT)
     find_package(OpenSSL)
     if (OPENSSL_FOUND)
         set(CEX_WITH_SSL "true")
@@ -36,6 +37,10 @@ if (NOT CEX_DISABLE_SSL)
         list(APPEND LIBCEX_EXTERNAL_LIBS OpenSSL::SSL OpenSSL::Crypto)
         list(APPEND package_deps OpenSSL)
     endif ()
+elseif (NOT LIBEVHTP_SSL_SUPPORT)
+    # libevhtp was built without SSL, force disable SSL in CEX
+    set(CEX_DISABLE_SSL ON)
+    message(STATUS "SSL disabled in CEX")
 endif ()
 
 if (NOT CEX_DISABLE_Z)
