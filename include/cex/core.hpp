@@ -431,6 +431,34 @@ class WebSocket
         \return Parameter value or nullptr if not found */
       const char* getQueryParam(const char* name) const;
 
+      /*! \brief Returns the underlying evhtp_request pointer
+        \return The evhtp_request pointer associated with this WebSocket connection */
+      evhtp_request* getRequest() const { return req; }
+
+      /*! \brief Comparison operator for use in std::set and std::map
+        \param other The WebSocket to compare with
+        \return `true` if this WebSocket's request pointer is less than the other's */
+      bool operator<(const WebSocket& other) const
+      {
+         return req < other.req;
+      }
+
+      /*! \brief Equality operator for use in std::unordered_map
+        \param other The WebSocket to compare with
+        \return `true` if both WebSocket objects refer to the same connection */
+      bool operator==(const WebSocket& other) const
+      {
+         return req == other.req;
+      }
+
+      /*! \brief Inequality operator
+        \param other The WebSocket to compare with
+        \return `true` if both WebSocket objects refer to different connections */
+      bool operator!=(const WebSocket& other) const
+      {
+         return req != other.req;
+      }
+
    private:
       evhtp_request* req;
 };
