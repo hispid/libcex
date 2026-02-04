@@ -1,7 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-![GitHub release](https://img.shields.io/github/release/patrickjane/libcex.svg)
-[![Build Status](https://travis-ci.org/patrickjane/libcex.svg?branch=master)](https://travis-ci.org/patrickjane/libcex)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8b21dce6d8e846eb9ad5b0dffe1eba10)](https://www.codacy.com/app/patrickjane/libcex?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=patrickjane/libcex&amp;utm_campaign=Badge_Grade)
+![GitHub release](https://img.shields.io/github/release/hispid/libcex.svg)
+utm_content=patrickjane/libcex&amp;utm_campaign=Badge_Grade)
 
 # libcex
 ## Overview
@@ -41,17 +40,45 @@ int main()
 `libcex` uses the `cmake` build system to compile the library and testcases. To compile/install, simply do:
 
 ```
-$ git clone https://github.com/patrickjane/libcex .
-remote: Enumerating objects: 4, done.
-remote: Counting objects: 100% (4/4), done.
-remote: Compressing objects: 100% (3/3), done.
-remote: Total 4 (delta 0), reused 0 (delta 0), pack-reused 0
-Unpacking objects: 100% (4/4), done.
+$ git clone https://github.com/hispid/libcex .
+Cloning into '.'...
+remote: Enumerating objects: 710, done.
+remote: Counting objects: 100% (159/159), done.
+remote: Compressing objects: 100% (84/84), done.
+remote: Total 710 (delta 88), reused 124 (delta 75), pack-reused 551 (from 1)
+Receiving objects: 100% (710/710), 2.24 MiB | 2.75 MiB/s, done.
+Resolving deltas: 100% (292/292), done.
 
 $ mkdir build
 $ cd build
 $ cmake ..
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found LibEvent: /usr/local/lib/libevent_openssl.so;...
+-- Found LibEvhtp: /usr/local/lib/libevhtp.a
+-- WebSocket support found in libevhtp
+-- SSL support found in libevhtp
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")
+-- Found LibZ: /usr/lib/x86_64-linux-gnu/libz.so
+-- Configuring done
+-- Generating done
+-- Build files have been written to: <build directory>
+
 $ make
+[  7%] Building CXX object CMakeFiles/cex.dir/src/basicauth.cc.o
+...
+[100%] Linking CXX shared library libcex.so
+[100%] Built target cex
 ```
 
 If cmake cannot find your OpenSSL installation, or you've installed in a non-standard location, you might want to add `-DOPENSSL_ROOT_DIR=/path/to/ssl` to the cmake call.
@@ -62,28 +89,28 @@ After successfully compiling the library, testcases can be run with `ctest`:
 
 ```
 $ ctest
-Test project /Users/patrickjane/Development/libcex/build
+Test project /home/hispid/Development/libcex/build
     Start 1: filesystem
-1/5 Test #1: filesystem .......................   Passed    0.10 sec
+1/5 Test #1: filesystem .......................   Passed    0.09 sec
     Start 2: mw_security
-2/5 Test #2: mw_security ......................   Passed    0.04 sec
+2/5 Test #2: mw_security ......................   Passed    0.03 sec
     Start 3: mw_session
-3/5 Test #3: mw_session .......................   Passed    0.04 sec
+3/5 Test #3: mw_session .......................   Passed    0.03 sec
     Start 4: routing
-4/5 Test #4: routing ..........................   Passed    0.15 sec
+4/5 Test #4: routing ..........................   Passed    0.11 sec
     Start 5: uploads
-5/5 Test #5: uploads ..........................   Passed    0.06 sec
+5/5 Test #5: uploads ..........................   Passed    0.04 sec
 
 100% tests passed, 0 tests failed out of 5
 
-Total Test time (real) =   0.41 sec
+Total Test time (real) =   0.31 sec
 ```
 # API
-For a full API documentation, visit the doxygen site at: https://patrickjane.github.io/libcex/index.html
+For a full API documentation, visit the doxygen site at: https://hispid.github.io/libcex/index.html
 
 # Usage
 ## Server
-[cex::Server API docs ↗](https://patrickjane.github.io/libcex/classcex_1_1_server.html)    
+[cex::Server API docs ↗](https://hispid.github.io/libcex/classcex_1_1_server.html)    
 
 The `cex::Server` class provides the HTTP/HTTPS listener and actually processes the request received by clients.
 A server can be created with default options (see API docs) or concrete options:
@@ -109,7 +136,7 @@ Supplying `true` to the last parameter starts the listener/eventloop within the 
 **Note**: The background thread is only used for the eventloop. The actual request processing might use additional/more threads as given by the `threadCount` config option (default: 4), independently from the listener thread.
 
 ## Middlewares
-[cex::Middleware API docs ↗](https://patrickjane.github.io/libcex/classcex_1_1_middleware.html)    
+[cex::Middleware API docs ↗](https://hispid.github.io/libcex/classcex_1_1_middleware.html)    
 
 The `cex::Server` class also provides the interface to attach middleware functions.
 Each middleware function will receive the `cex::Request` and `cex::Response` objects, which allow to interact with the currently receiced request as well as construct responses which will be sent back to the client.
@@ -164,10 +191,10 @@ Execution of middlewares stops once:
 ### Built-in middlewares
 `libcex` already provides a few predefined middleware functions ready to use:
 
-- `cex::filesystem` middleware for accesing static files on the filesystem [(API docs ↗)](https://patrickjane.github.io/libcex/filesystem_8hpp.html) [(Options ↗)](https://patrickjane.github.io/libcex/structcex_1_1_filesystem_options.html)
-- `cex::security` middleware that sets a number of security related HTTP headers [(API docs ↗)](https://patrickjane.github.io/libcex/security_8hpp.html) [(Options ↗)](https://patrickjane.github.io/libcex/structcex_1_1_security_options.html)
-- `cex::sessionHandler` middleware that adds/retrieves session cookies [(API docs ↗)](https://patrickjane.github.io/libcex/session_8hpp.html) [(Options ↗)](https://patrickjane.github.io/libcex/structcex_1_1_session_options.html)
-- `cex::basicAuth` middleware that extracts HTTP basic auth information from the request [(API docs ↗)](https://patrickjane.github.io/libcex/basicauth_8hpp.html)
+- `cex::filesystem` middleware for accesing static files on the filesystem [(API docs ↗)](https://hispid.github.io/libcex/filesystem_8hpp.html) [(Options ↗)](https://hispid.github.io/libcex/structcex_1_1_filesystem_options.html)
+- `cex::security` middleware that sets a number of security related HTTP headers [(API docs ↗)](https://hispid.github.io/libcex/security_8hpp.html) [(Options ↗)](https://hispid.github.io/libcex/structcex_1_1_security_options.html)
+- `cex::sessionHandler` middleware that adds/retrieves session cookies [(API docs ↗)](https://hispid.github.io/libcex/session_8hpp.html) [(Options ↗)](https://hispid.github.io/libcex/structcex_1_1_session_options.html)
+- `cex::basicAuth` middleware that extracts HTTP basic auth information from the request [(API docs ↗)](https://hispid.github.io/libcex/basicauth_8hpp.html)
 
 Example:
 
@@ -229,7 +256,7 @@ int main()
 ```
 
 ## Requests
-[cex::Request API docs ↗](https://patrickjane.github.io/libcex/classcex_1_1_request.html)    
+[cex::Request API docs ↗](https://hispid.github.io/libcex/classcex_1_1_request.html)    
 
 The `cex::Request` class provides access to the request contents (URL, headers, parameters, body, ...) as sent by the client. An instance of `cex::Request` represents a single HTTP request which shall be handled by the application. In terms of HTTP communication, `cex::Request` is *read only*, that is, it cannot be used to send a response. For this, `cex::Response` is used.
 
@@ -265,7 +292,7 @@ app.use("/content", [](cex::Request* req, cex::Response* res, std::function<void
 To allow middlewares to transfer information between them, the `cex::Request` class contains a property list. For example, the `cex::basicAuth` middleware stored the username and password supplied by the client in the properties `basicUsername` and `basicPassword`.
 
 ## Response
-[cex::Response API docs ↗](https://patrickjane.github.io/libcex/classcex_1_1_response.html)    
+[cex::Response API docs ↗](https://hispid.github.io/libcex/classcex_1_1_response.html)    
 
 The `cex::Response` class provides the interface for sending responses back to the client. This includes the HTTP Code, payloads as well as header parameters. 
 The most simple response might just include the HTTP code:
@@ -350,6 +377,8 @@ app.get("/myfile", [](cex::Request* req, cex::Response* res, std::function<void(
 The `cex::Response::stream` function accepts a `std::istream`, such as a `std::ifstream`.
 
 ### WebSocket support
+[cex::WebSocket API docs ↗](https://hispid.github.io/libcex/classcex_1_1_web_socket.html)
+
 `libcex` provides WebSocket support for full-duplex communication. WebSocket functionality is available when `libevhtp` is compiled with WebSocket support.
 
 The `cex::Server` class provides an interface to register WebSocket handlers:
