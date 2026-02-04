@@ -348,6 +348,29 @@ app.get("/myfile", [](cex::Request* req, cex::Response* res, std::function<void(
 ```
 The `cex::Response::stream` function accepts a `std::istream`, such as a `std::ifstream`.
 
+### WebSocket support
+`libcex` provides WebSocket support for full-duplex communication. WebSocket functionality is available when `libevhtp` is compiled with WebSocket support.
+
+The `cex::Server` class provides an interface to register WebSocket handlers:
+
+```cpp
+app.websocket("/ws", 
+    [](const cex::WebSocket& ws) {
+        // Called when a WebSocket connection is established
+    },
+    [](const cex::WebSocket& ws, const char* data, size_t len, cex::WebSocket::FrameType type) {
+        // Called when a WebSocket message is received
+        ws.send("Echo: ");
+        ws.send(data, len);
+    },
+    [](const cex::WebSocket& ws) {
+        // Called when a WebSocket connection is closed
+    }
+);
+```
+
+The `cex::WebSocket` class provides methods for sending messages (`send()`, `sendFrame()`), checking connection status (`isOpen()`), and accessing request information (`getHeader()`, `getQueryParam()`).
+
 # Copyright notice
 `libcex` uses the following two awesome libraries for unit tests:
 
