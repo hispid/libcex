@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['middleware',['Middleware',['../classcex_1_1_middleware.html',1,'cex']]]
+  ['middleware_152',['Middleware',['../classcex_1_1_middleware.html',1,'cex']]]
 ];

@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['connect',['connect',['../classcex_1_1_server.html#aea613d2b0fa98563cc5ad287f9df7d5c',1,'cex::Server::connect(MiddlewareFunction func)'],['../classcex_1_1_server.html#a7b6df2de7c0e043a3e4e7f0e64d8440d',1,'cex::Server::connect(const char *path, MiddlewareFunction func, int flags=Middleware::fMatchContain)']]],
-  ['copy',['copy',['../classcex_1_1_server.html#a6aa013e6b001fcc829a35f3e06e6b670',1,'cex::Server::copy(MiddlewareFunction func)'],['../classcex_1_1_server.html#a1b32263c5b19e7092a89bd8874f78b41',1,'cex::Server::copy(const char *path, MiddlewareFunction func, int flags=Middleware::fMatchContain)']]]
+  ['close_169',['close',['../classcex_1_1_web_socket.html#ad2c82fe38048bddd74635a23e52af5ad',1,'cex::WebSocket']]],
+  ['connect_170',['connect',['../classcex_1_1_server.html#a970ef89726296eb66119263c903b9f4c',1,'cex::Server::connect(const MiddlewareFunction &amp;func)'],['../classcex_1_1_server.html#af48c90f2849d0a7b284ac813cfb270bd',1,'cex::Server::connect(const char *path, const MiddlewareFunction &amp;func, int flags=Middleware::fMatchContain)']]],
+  ['copy_171',['copy',['../classcex_1_1_server.html#ade180421b85f0b5dd515263e7f9665ed',1,'cex::Server::copy(const MiddlewareFunction &amp;func)'],['../classcex_1_1_server.html#a66ac14e68232c8dd925cc8397ee564c5',1,'cex::Server::copy(const char *path, const MiddlewareFunction &amp;func, int flags=Middleware::fMatchContain)']]]
 ];

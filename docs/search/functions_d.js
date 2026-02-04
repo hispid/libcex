@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['trace',['trace',['../classcex_1_1_server.html#aca52bdd814104883ad67d359f45ab5e4',1,'cex::Server::trace(MiddlewareFunction func)'],['../classcex_1_1_server.html#a9c197803c995e68e2a8ac868de736f15',1,'cex::Server::trace(const char *path, MiddlewareFunction func, int flags=Middleware::fMatchContain)']]]
+  ['trace_233',['trace',['../classcex_1_1_server.html#a505a256630b1aee76f9250c7ed37d719',1,'cex::Server::trace(const MiddlewareFunction &amp;func)'],['../classcex_1_1_server.html#a94f084c7e38a34e81f208f87056aa070',1,'cex::Server::trace(const char *path, const MiddlewareFunction &amp;func, int flags=Middleware::fMatchContain)']]]
 ];

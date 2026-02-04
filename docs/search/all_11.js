@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['unlock',['unlock',['../classcex_1_1_server.html#ace24289a674dfb369d276933635b2ae8',1,'cex::Server::unlock(MiddlewareFunction func)'],['../classcex_1_1_server.html#a7249e36f1f7c489660bb6ba0a523458e',1,'cex::Server::unlock(const char *path, MiddlewareFunction func, int flags=Middleware::fMatchContain)']]],
-  ['uploadfunction',['UploadFunction',['../core_8hpp.html#a6c780636a213095ca1e2ac090929b383',1,'cex']]],
-  ['uploads',['uploads',['../classcex_1_1_server.html#ad4146c5b8ae9d2086c690e7147ccf865',1,'cex::Server::uploads(UploadFunction func)'],['../classcex_1_1_server.html#a64c2ef97a8fe4bbf6248860e8240df0a',1,'cex::Server::uploads(const char *path, UploadFunction func, Method method=methodPOST, int flags=Middleware::fMatchContain)']]],
-  ['use',['use',['../classcex_1_1_server.html#a390ee7bf82ef780099c98057d66f00a5',1,'cex::Server::use(MiddlewareFunction func)'],['../classcex_1_1_server.html#acec9f8bfe0bab898fcb0b78e954a94a5',1,'cex::Server::use(const char *path, MiddlewareFunction func, int flags=Middleware::fMatchContain)']]],
-  ['util_2ehpp',['util.hpp',['../util_8hpp.html',1,'']]]
+  ['unlock_127',['unlock',['../classcex_1_1_server.html#a45da64aa3b234d99323f346b7ea6f4ed',1,'cex::Server::unlock(const MiddlewareFunction &amp;func)'],['../classcex_1_1_server.html#aa6ff6062c2371b3ac360e572962363d6',1,'cex::Server::unlock(const char *path, const MiddlewareFunction &amp;func, int flags=Middleware::fMatchContain)']]],
+  ['uploadfunction_128',['UploadFunction',['../core_8hpp.html#a6c780636a213095ca1e2ac090929b383',1,'cex']]],
+  ['uploads_129',['uploads',['../classcex_1_1_server.html#a82f6938f94b5aa4c03ae4451a623fbbc',1,'cex::Server::uploads(const UploadFunction &amp;func)'],['../classcex_1_1_server.html#a9ddfec7a9a5f726cf78ed0fa1119e821',1,'cex::Server::uploads(const char *path, const UploadFunction &amp;func, Method method=methodPOST, int flags=Middleware::fMatchContain)']]],
+  ['use_130',['use',['../classcex_1_1_server.html#a202c6c5787755251757a6e88ffbb32ba',1,'cex::Server::use(const MiddlewareFunction &amp;func)'],['../classcex_1_1_server.html#a4cc02f69c92ad74d63ffe4e29d3d5749',1,'cex::Server::use(const char *path, const MiddlewareFunction &amp;func, int flags=Middleware::fMatchContain)']]],
+  ['util_2ehpp_131',['util.hpp',['../util_8hpp.html',1,'']]]
 ];
