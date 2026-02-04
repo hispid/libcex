@@ -26,6 +26,7 @@
  *
  * \li <a href="http://libevent.org/">libevent</a>
  * \li <a href="https://github.com/criticalstack/libevhtp">libevhtp</a>
+ *   - For WebSocket support, use <a href="https://github.com/hispid/libevhtp_ws">libevhtp_ws</a> instead
  *
  * \subsection optional_sec Optional dependencies
  * \li OpenSSL (for HTTPS)
@@ -33,10 +34,11 @@
 
  * \section installation_sec Installation
  * ``` 
- * git clone https://github.com/patrickjane/libcex .
+ * git clone https://github.com/hispid/libcex .
  * mkdir build
  * cd build
  * cmake ..
+ * make
  * ``` 
  * If cmake cannot find your OpenSSL installation, or you've installed in a non-standard location, you might want to add `-DOPENSSL_ROOT_DIR=/path/to/ssl` to the cmake call.
  * \section usage_sec Usage
@@ -72,7 +74,26 @@
  * \li The last registered middleware was executed
  * \li The `next` method is not called
  *
- * The method \link cex::Response::end \endlink is used to send a response to the client. This can be just a statuscode, or also a payload. If no registered middleware calls 
+ * The method \link cex::Response::end \endlink is used to send a response to the client. This can be just a statuscode, or also a payload.
+ *
+ * \section websocket_sec WebSocket Support
+ * `libcex` provides WebSocket support for full-duplex communication when built with <a href="https://github.com/hispid/libevhtp_ws">libevhtp_ws</a>. The \link cex::Server::websocket \endlink method allows registering WebSocket handlers:
+ * ```
+ * app.websocket("/ws", 
+ *     [](const cex::WebSocket& ws) {
+ *         // Called when a WebSocket connection is established
+ *     },
+ *     [](const cex::WebSocket& ws, const char* data, size_t len, cex::WebSocket::FrameType type) {
+ *         // Called when a WebSocket message is received
+ *         ws.send("Echo: ");
+ *         ws.send(data, len);
+ *     },
+ *     [](const cex::WebSocket& ws) {
+ *         // Called when a WebSocket connection is closed
+ *     }
+ * );
+ * ```
+ * See \link cex::WebSocket \endlink for more information about WebSocket API.
  */
 
 

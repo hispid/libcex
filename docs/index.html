@@ -76,7 +76,10 @@ Requirements</h1>
 Mandatory libraries</h2>
 <ul>
 <li><a href="http://libevent.org/">libevent</a> </li>
-<li><a href="https://github.com/criticalstack/libevhtp">libevhtp</a></li>
+<li><a href="https://github.com/criticalstack/libevhtp">libevhtp</a><ul>
+<li>For WebSocket support, use <a href="https://github.com/hispid/libevhtp_ws">libevhtp_ws</a> instead</li>
+</ul>
+</li>
 </ul>
 <h2><a class="anchor" id="optional_sec"></a>
 Optional dependencies</h2>
@@ -86,10 +89,11 @@ Optional dependencies</h2>
 </ul>
 <h1><a class="anchor" id="installation_sec"></a>
 Installation</h1>
-<div class="fragment"><div class="line">git clone https:<span class="comment">//github.com/patrickjane/libcex .</span></div>
+<div class="fragment"><div class="line">git clone https:<span class="comment">//github.com/hispid/libcex .</span></div>
 <div class="line">mkdir build</div>
 <div class="line">cd build</div>
 <div class="line">cmake ..</div>
+<div class="line">make</div>
 </div><!-- fragment --><p> If cmake cannot find your OpenSSL installation, or you've installed in a non-standard location, you might want to add <code>-DOPENSSL_ROOT_DIR=/path/to/ssl</code> to the cmake call. </p>
 <h1><a class="anchor" id="usage_sec"></a>
 Usage</h1>
@@ -123,7 +127,27 @@ Usage</h1>
 <li>The last registered middleware was executed </li>
 <li>The <code>next</code> method is not called</li>
 </ul>
-<p>The method <a class="el" href="classcex_1_1_response.html#a33288df958499367fda02b06a962ea34">cex::Response::end</a> is used to send a response to the client. This can be just a statuscode, or also a payload. If no registered middleware calls </p>
+<p>The method <a class="el" href="classcex_1_1_response.html#a33288df958499367fda02b06a962ea34">cex::Response::end</a> is used to send a response to the client. This can be just a statuscode, or also a payload.</p>
+<h1><a class="anchor" id="websocket_sec"></a>
+WebSocket Support</h1>
+<p><code>libcex</code> provides WebSocket support for full-duplex communication when built with <a href="https://github.com/hispid/libevhtp_ws">libevhtp_ws</a>. The <a class="el" href="classcex_1_1_server.html#a942186418a61241e79909aa137fee979">cex::Server::websocket</a> method allows registering WebSocket handlers: </p><div class="fragment"><div class="line">app.<a class="code" href="classcex_1_1_server.html#a942186418a61241e79909aa137fee979">websocket</a>(<span class="stringliteral">&quot;/ws&quot;</span>, </div>
+<div class="line">    [](<span class="keyword">const</span> <a class="code" href="classcex_1_1_web_socket.html">cex::WebSocket</a>&amp; ws) {</div>
+<div class="line">        <span class="comment">// Called when a WebSocket connection is established</span></div>
+<div class="line">    },</div>
+<div class="line">    [](<span class="keyword">const</span> <a class="code" href="classcex_1_1_web_socket.html">cex::WebSocket</a>&amp; ws, <span class="keyword">const</span> <span class="keywordtype">char</span>* data, <span class="keywordtype">size_t</span> len, <a class="code" href="classcex_1_1_web_socket.html#a96eced569906559b3aec41435159b938">cex::WebSocket::FrameType</a> type) {</div>
+<div class="line">        <span class="comment">// Called when a WebSocket message is received</span></div>
+<div class="line">        ws.<a class="code" href="classcex_1_1_web_socket.html#ad1add9da4b7d3ec89942280fb77d3aa6">send</a>(<span class="stringliteral">&quot;Echo: &quot;</span>);</div>
+<div class="line">        ws.<a class="code" href="classcex_1_1_web_socket.html#ad1add9da4b7d3ec89942280fb77d3aa6">send</a>(data, len);</div>
+<div class="line">    },</div>
+<div class="line">    [](<span class="keyword">const</span> <a class="code" href="classcex_1_1_web_socket.html">cex::WebSocket</a>&amp; ws) {</div>
+<div class="line">        <span class="comment">// Called when a WebSocket connection is closed</span></div>
+<div class="line">    }</div>
+<div class="line">);</div>
+<div class="ttc" id="aclasscex_1_1_server_html_a942186418a61241e79909aa137fee979"><div class="ttname"><a href="classcex_1_1_server.html#a942186418a61241e79909aa137fee979">cex::Server::websocket</a></div><div class="ttdeci">void websocket(const char *path, const WebSocketOpenFunction &amp;onOpen, const WebSocketMessageFunction &amp;onMessage, const WebSocketCloseFunction &amp;onClose=nullptr, const WebSocketErrorFunction &amp;onError=nullptr, int flags=Middleware::fMatchContain)</div><div class="ttdoc">Attaches a WebSocket handler for the given path.</div><div class="ttdef"><b>Definition:</b> server.cc:485</div></div>
+<div class="ttc" id="aclasscex_1_1_web_socket_html"><div class="ttname"><a href="classcex_1_1_web_socket.html">cex::WebSocket</a></div><div class="ttdoc">Represents a WebSocket connection.</div><div class="ttdef"><b>Definition:</b> core.hpp:383</div></div>
+<div class="ttc" id="aclasscex_1_1_web_socket_html_a96eced569906559b3aec41435159b938"><div class="ttname"><a href="classcex_1_1_web_socket.html#a96eced569906559b3aec41435159b938">cex::WebSocket::FrameType</a></div><div class="ttdeci">FrameType</div><div class="ttdoc">WebSocket frame types.</div><div class="ttdef"><b>Definition:</b> core.hpp:390</div></div>
+<div class="ttc" id="aclasscex_1_1_web_socket_html_ad1add9da4b7d3ec89942280fb77d3aa6"><div class="ttname"><a href="classcex_1_1_web_socket.html#ad1add9da4b7d3ec89942280fb77d3aa6">cex::WebSocket::send</a></div><div class="ttdeci">int send(const char *message) const</div><div class="ttdoc">Sends a text message to the client.</div><div class="ttdef"><b>Definition:</b> websocket.cc:39</div></div>
+</div><!-- fragment --><p> See <a class="el" href="classcex_1_1_web_socket.html">cex::WebSocket</a> for more information about WebSocket API. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
