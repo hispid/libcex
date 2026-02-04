@@ -36,7 +36,7 @@ WebSocket::WebSocket(evhtp_request* req)
 // send (text message)
 //***************************************************************************
 
-int WebSocket::send(const char* message)
+int WebSocket::send(const char* message) const
 {
    if (!message || !req)
       return fail;
@@ -48,7 +48,7 @@ int WebSocket::send(const char* message)
 // send (binary message)
 //***************************************************************************
 
-int WebSocket::send(const char* data, size_t len)
+int WebSocket::send(const char* data, size_t len) const
 {
    return sendFrame(data, len, wsBinary);
 }
@@ -57,7 +57,7 @@ int WebSocket::send(const char* data, size_t len)
 // sendFrame
 //***************************************************************************
 
-int WebSocket::sendFrame(const char* data, size_t len, FrameType frameType)
+int WebSocket::sendFrame(const char* data, size_t len, FrameType frameType) const
 {
    if (!req || !data || len == 0)
       return fail;
@@ -96,7 +96,7 @@ int WebSocket::sendFrame(const char* data, size_t len, FrameType frameType)
 // close
 //***************************************************************************
 
-void WebSocket::close()
+void WebSocket::close() const
 {
    if (req)
    {

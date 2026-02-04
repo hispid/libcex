@@ -520,7 +520,7 @@ void Server::handleWebSocketRequest(evhtp_request* req, void* arg)
       if (handler->onOpen)
       {
          WebSocket ws(req);
-         handler->onOpen(&ws);
+         handler->onOpen(ws);
       }
       return;
    }
@@ -544,7 +544,7 @@ void Server::handleWebSocketRequest(evhtp_request* req, void* arg)
       }
 
       WebSocket ws(req);
-      handler->onMessage(&ws, data, bufLen, frameType);
+      handler->onMessage(ws, data, bufLen, frameType);
    }
 
    // Check if connection should be closed
@@ -553,7 +553,7 @@ void Server::handleWebSocketRequest(evhtp_request* req, void* arg)
       if (handler->onClose)
       {
          WebSocket ws(req);
-         handler->onClose(&ws);
+         handler->onClose(ws);
       }
    }
 }

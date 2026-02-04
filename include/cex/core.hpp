@@ -401,21 +401,21 @@ class WebSocket
 
       /*! \brief Sends a text message to the client
         \param message The text message to send */
-      int send(const char* message);
+      int send(const char* message) const;
 
       /*! \brief Sends a binary message to the client
         \param data The binary data to send
         \param len The length of the data */
-      int send(const char* data, size_t len);
+      int send(const char* data, size_t len) const;
 
       /*! \brief Sends a WebSocket frame
         \param data The data to send
         \param len The length of the data
         \param frameType The type of frame to send */
-      int sendFrame(const char* data, size_t len, FrameType frameType);
+      int sendFrame(const char* data, size_t len, FrameType frameType) const;
 
       /*! \brief Closes the WebSocket connection */
-      void close();
+      void close() const;
 
       /*! \brief Checks if the WebSocket connection is open
         \return `true` if the connection is open, otherwise `false` */
@@ -438,7 +438,7 @@ class WebSocket
 /*! \public
    \brief A function which is called when a WebSocket connection is established.
    \param ws The WebSocket object representing the connection */
-typedef std::function<void(WebSocket* ws)> WebSocketOpenFunction;
+typedef std::function<void(const WebSocket& ws)> WebSocketOpenFunction;
 
 /*! \public
    \brief A function which is called when a WebSocket message is received.
@@ -446,18 +446,18 @@ typedef std::function<void(WebSocket* ws)> WebSocketOpenFunction;
    \param data The received message data
    \param len The length of the received message
    \param frameType The type of the received frame */
-typedef std::function<void(WebSocket* ws, const char* data, size_t len, WebSocket::FrameType frameType)> WebSocketMessageFunction;
+typedef std::function<void(const WebSocket& ws, const char* data, size_t len, WebSocket::FrameType frameType)> WebSocketMessageFunction;
 
 /*! \public
    \brief A function which is called when a WebSocket connection is closed.
    \param ws The WebSocket object representing the connection */
-typedef std::function<void(WebSocket* ws)> WebSocketCloseFunction;
+typedef std::function<void(const WebSocket& ws)> WebSocketCloseFunction;
 
 /*! \public
    \brief A function which is called when a WebSocket error occurs.
    \param ws The WebSocket object representing the connection
    \param error The error message */
-typedef std::function<void(WebSocket* ws, const char* error)> WebSocketErrorFunction;
+typedef std::function<void(const WebSocket& ws, const char* error)> WebSocketErrorFunction;
 #endif
 
 //***************************************************************************
