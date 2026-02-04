@@ -1,6 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![GitHub release](https://img.shields.io/github/release/hispid/libcex.svg)
-utm_content=patrickjane/libcex&amp;utm_campaign=Badge_Grade)
 
 # libcex
 ## Overview
